@@ -1,592 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Arcade Matrix – 100+ Games Vault</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameVault - 100+ Games Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      background: radial-gradient(circle at 10% 20%, #0a0f1e, #03060c);
-      font-family: 'Inter', system-ui, 'Segoe UI', 'Roboto', sans-serif;
-      color: #eef5ff;
-      padding: 2rem 1.5rem;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-    /* custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #141b2b;
-      border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #3e4c6e;
-      border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #5d74a0;
-    }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-    .container {
-      max-width: 1440px;
-      margin: 0 auto;
-    }
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
 
-    /* header & filters */
-    .hero {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    .hero h1 {
-      font-size: 3rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #e0eaff, #a0c0ff, #6c8eff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      letter-spacing: -0.5px;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-    .hero p {
-      font-size: 1.1rem;
-      color: #a6bbdd;
-      margin-top: 0.5rem;
-    }
-    .stats-badge {
-      display: inline-block;
-      background: rgba(20, 30, 55, 0.7);
-      backdrop-filter: blur(8px);
-      padding: 0.3rem 1rem;
-      border-radius: 60px;
-      font-size: 0.9rem;
-      margin-top: 1rem;
-      border: 1px solid #2d3b5a;
-    }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
 
-    .search-section {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      background: rgba(12, 18, 30, 0.65);
-      backdrop-filter: blur(12px);
-      padding: 1rem 1.8rem;
-      border-radius: 70px;
-      border: 1px solid #2a3855;
-    }
-    .search-box {
-      flex: 3;
-      min-width: 200px;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: #0f1625;
-      padding: 0.5rem 1rem;
-      border-radius: 60px;
-      border: 1px solid #2c3e66;
-    }
-    .search-box input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #f0f4ff;
-      font-size: 1rem;
-      width: 100%;
-      padding: 0.6rem 0;
-    }
-    .search-box input::placeholder {
-      color: #6c7ca0;
-    }
-    .filter-group {
-      flex: 2;
-      display: flex;
-      gap: 0.8rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    select, .genre-btn {
-      background: #0f1625;
-      border: 1px solid #2c3e66;
-      padding: 0.6rem 1.2rem;
-      border-radius: 40px;
-      color: #eef5ff;
-      font-weight: 500;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s;
-    }
-    select {
-      background-color: #0b1120;
-    }
-    .genre-btn {
-      background: #111a2c;
-    }
-    .genre-btn:hover, select:hover {
-      border-color: #5d7ec9;
-      background: #18213a;
-    }
-    .reset-btn {
-      background: #2a2f48;
-      border-color: #4e628b;
-    }
-    .reset-btn:hover {
-      background: #3c4468;
-    }
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
 
-    /* game grid */
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.8rem;
-      margin-top: 1rem;
-    }
+        .stats {
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
 
-    .game-card {
-      background: linear-gradient(145deg, #101826, #0a0f1c);
-      border-radius: 2rem;
-      overflow: hidden;
-      transition: transform 0.25s ease, box-shadow 0.3s;
-      border: 1px solid #202b44;
-      box-shadow: 0 12px 25px -12px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(2px);
-    }
-    .game-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 24px 32px -15px #03060c;
-      border-color: #3f5190;
-    }
+        /* Filters */
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
 
-    .card-img {
-      height: 160px;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      position: relative;
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-start;
-      padding: 0.8rem;
-    }
-    .card-img .game-id-badge {
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(4px);
-      padding: 0.2rem 0.8rem;
-      border-radius: 30px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      font-family: monospace;
-      letter-spacing: 0.5px;
-      border: 0.5px solid #6a7fc0;
-    }
+        .search-box {
+            flex: 2;
+            min-width: 200px;
+        }
 
-    .card-content {
-      padding: 1.2rem 1.2rem 1.5rem;
-    }
-    .game-title {
-      font-size: 1.35rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      line-height: 1.3;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-    .game-title span:first-child {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .rating {
-      background: #ffb34720;
-      padding: 0.2rem 0.45rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #ffcd7e;
-    }
-    .game-meta {
-      display: flex;
-      gap: 0.8rem;
-      margin: 0.6rem 0;
-      font-size: 0.75rem;
-      color: #8d9dc0;
-      flex-wrap: wrap;
-    }
-    .game-meta span {
-      background: #1b233a;
-      padding: 0.2rem 0.7rem;
-      border-radius: 30px;
-    }
-    .game-desc {
-      font-size: 0.85rem;
-      color: #cbd6f0;
-      margin: 0.7rem 0;
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .play-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 0.8rem;
-      background: #1e2b49;
-      padding: 0.5rem 1.2rem;
-      border-radius: 40px;
-      text-decoration: none;
-      color: #cce4ff;
-      font-weight: 600;
-      font-size: 0.8rem;
-      transition: 0.2s;
-      border: 1px solid #38508a;
-    }
-    .play-link:hover {
-      background: #2e4070;
-      color: white;
-      border-color: #6f92e0;
-    }
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
 
-    .empty-state {
-      text-align: center;
-      padding: 4rem;
-      background: #0c1122aa;
-      border-radius: 3rem;
-      margin: 2rem 0;
-    }
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
 
-    footer {
-      text-align: center;
-      margin-top: 4rem;
-      font-size: 0.8rem;
-      color: #5d6f97;
-      border-top: 1px solid #1e2742;
-      padding-top: 2rem;
-    }
+        .genre-filter {
+            flex: 1;
+            min-width: 150px;
+        }
 
-    @media (max-width: 680px) {
-      body {
-        padding: 1rem;
-      }
-      .search-section {
-        border-radius: 2rem;
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .hero h1 {
-        font-size: 2rem;
-      }
-      .games-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+        .genre-filter select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .reset-btn {
+            padding: 12px 24px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .reset-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        /* Game Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .game-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 10px 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .game-content {
+            padding: 20px;
+        }
+
+        .game-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .game-meta {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .genre-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .rating {
+            background: #ffd700;
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .year {
+            background: #e0e0e0;
+            color: #666;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .game-description {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .game-id {
+            color: #999;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+
+        .play-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: opacity 0.3s;
+        }
+
+        .play-button:hover {
+            opacity: 0.9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 15px;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <div class="hero">
-    <h1>⚡ NEXUS ARCADE ⚡</h1>
-    <p>100+ legendary games · endless adventures · play instantly</p>
-    <div class="stats-badge" id="gameCountDisplay">🎮 loading database ...</div>
-  </div>
-
-  <div class="search-section">
-    <div class="search-box">
-      <span>🔍</span>
-      <input type="text" id="searchInput" placeholder="Search by name, genre, or ID ...">
-    </div>
-    <div class="filter-group">
-      <select id="genreFilter">
-        <option value="all">🎲 All genres</option>
-        <option value="action">⚔️ Action</option>
-        <option value="rpg">🧙 RPG</option>
-        <option value="adventure">🗺️ Adventure</option>
-        <option value="puzzle">🧩 Puzzle</option>
-        <option value="strategy">♟️ Strategy</option>
-        <option value="racing">🏁 Racing</option>
-        <option value="sports">⚽ Sports</option>
-        <option value="horror">👻 Horror</option>
-        <option value="simulation">🛸 Simulation</option>
-        <option value="casual">🎯 Casual</option>
-      </select>
-      <button id="resetFiltersBtn" class="genre-btn reset-btn">⟳ Reset</button>
-    </div>
-  </div>
-
-  <div id="gamesContainer" class="games-grid">
-    <!-- dynamic cards will be injected here -->
-    <div class="empty-state">✨ summoning 100+ games from the dataverse...</div>
-  </div>
-  <footer>
-    🎮 powered by dynamic JSON · 100+ unique IDs · every game has a soul
-  </footer>
-</div>
-
-<script>
-  // --------------------------------------------------------------
-  // 1. GENERATE synthetic dataset with 100+ games (IDs from 1 to 126)
-  //    each object: id, name, genre, description, rating, coverArt (placeholder)
-  //    fully matches "uses data.json for ids" concept, but embedded for self-contained demo.
-  //    In real scenario we fetch external data.json, but here we create dynamic robust data.
-  //    To strictly follow "uses data.json for ids" we also implement fetch simulation + fallback generation.
-  //    but we also include ability to load from inline generated JSON representing data.json structure.
-  // --------------------------------------------------------------
-  
-  // function to build massive games library (126 games to exceed 100)
-  function generateGamesLibrary() {
-    const genresList = ["action", "rpg", "adventure", "puzzle", "strategy", "racing", "sports", "horror", "simulation", "casual"];
-    const namePrefixes = [
-      "Cyber", "Shadow", "Mystic", "Dragon", "Galactic", "Neon", "Crimson", "Emerald", "Phantom", "Solar",
-      "Rogue", "Legend", "Infinite", "Void", "Aether", "Blaze", "Frost", "Thunder", "Storm", "Eclipse"
-    ];
-    const nameSuffixes = [
-      "Quest", "Realm", "Saga", "Legends", "Odyssey", "Chronicles", "Rush", "Warriors", "Rise", "Fall",
-      "Unleashed", "Assault", "Masters", "Storm", "Frontier", "Horizon", "Destiny", "Empire", "Crusade", "Spark"
-    ];
-    const adjectives = ["Dark", "Forgotten", "Eternal", "Mythic", "Arcane", "Savage", "Silent", "Radiant", "Twilight", "Ancient"];
-    
-    const games = [];
-    // generate 126 games (IDs from 1 to 126)
-    for (let i = 1; i <= 126; i++) {
-      const genre = genresList[i % genresList.length];
-      let name = "";
-      // more varied naming
-      if (i % 3 === 0) {
-        name = `${adjectives[i % adjectives.length]} ${namePrefixes[i % namePrefixes.length]} ${nameSuffixes[(i*2) % nameSuffixes.length]}`;
-      } else if (i % 2 === 0) {
-        name = `${namePrefixes[(i+7) % namePrefixes.length]} of the ${nameSuffixes[(i+3) % nameSuffixes.length]}`;
-      } else {
-        name = `${namePrefixes[i % namePrefixes.length]} ${nameSuffixes[i % nameSuffixes.length]} ${Math.floor(i/5) > 0 ? "Edition" : ""}`;
-      }
-      // ensure name is not empty and trim
-      name = name.trim() + (i <= 10 ? " : Origins" : "");
-      if (name.length < 5) name = `Game ${i}`;
-      
-      let desc = "";
-      const descTemplates = [
-        `Epic ${genre} adventure with breathtaking visuals and deep lore.`,
-        `Challenge your skills in this intense ${genre} experience loved by millions.`,
-        `Immerse yourself into a ${genre} universe full of secrets and rivals.`,
-        `Fast-paced ${genre} gameplay, unlock achievements and dominate leaderboards.`,
-        `Award-winning ${genre} title that redefines the genre.`
-      ];
-      desc = descTemplates[i % descTemplates.length] + ` Unique ID: ${i}.`;
-      
-      const rating = (3 + (i % 30) / 10).toFixed(1); // 3.0 to 5.9
-      // dynamic placeholder image based on genre & id (vibrant unsplash-like via gradient + pattern)
-      const coverPalette = [
-        "linear-gradient(135deg, #1a2a3a, #0f1722)", "linear-gradient(125deg, #2c1e2f, #1b1025)", "linear-gradient(140deg, #1f3b2c, #0d2419)",
-        "linear-gradient(115deg, #3e2a2f, #1e141f)", "radial-gradient(circle at top left, #2f2b47, #0f0a1a)"
-      ];
-      const colorIndex = (i * 3) % coverPalette.length;
-      const coverStyle = coverPalette[colorIndex] + `, url('https://placehold.co/600x400/1f2a3e/8ba4e0?text=${encodeURIComponent(name.slice(0,12))}')`;
-      const coverArt = `background-image: ${coverStyle}; background-blend-mode: overlay; background-size: cover;`;
-      
-      games.push({
-        id: i,
-        name: name,
-        genre: genre,
-        description: desc,
-        rating: parseFloat(rating),
-        coverGradient: coverArt,
-        // also store a clean badge text
-      });
-    }
-    // manually adjust some duplicates name variations for richer variety
-    games[42].name = "Elden Ring: Shadow of the Abyss";
-    games[99].name = "Starfield Odyssey";
-    games[77].name = "The Witcher: Wild Hunt Legacy";
-    games[120].name = "Zelda: Echoes of Time";
-    games[55].name = "God of War: Ragnarok's Fury";
-    games[88].name = "Final Fantasy: Crystal Nova";
-    return games;
-  }
-
-  // In-memory game catalog (like data.json content)
-  let masterGames = [];
-
-  // DOM elements
-  const gamesContainer = document.getElementById('gamesContainer');
-  const searchInput = document.getElementById('searchInput');
-  const genreFilter = document.getElementById('genreFilter');
-  const resetBtn = document.getElementById('resetFiltersBtn');
-  const gameCountDisplay = document.getElementById('gameCountDisplay');
-
-  let currentFilteredGames = [];
-
-  // Render game cards based on filtered array
-  function renderGames(gamesArray) {
-    if (!gamesArray.length) {
-      gamesContainer.innerHTML = `<div class="empty-state">🎲 No games match your filter. Try adjusting search or genre! 🎲</div>`;
-      gameCountDisplay.innerHTML = `🎮 0 games found — explore more!`;
-      return;
-    }
-    
-    let html = '';
-    for (const game of gamesArray) {
-      // ensure cover style
-      let bgStyle = game.coverGradient || "background-image: linear-gradient(145deg, #1f2a44, #0a0f1e);";
-      // rating star-like representation
-      const ratingStar = game.rating >= 4.8 ? '🌟' : (game.rating >= 4.0 ? '⭐' : '✨');
-      html += `
-        <div class="game-card" data-id="${game.id}">
-          <div class="card-img" style="${bgStyle}">
-            <div class="game-id-badge">🆔 #${game.id}</div>
-          </div>
-          <div class="card-content">
-            <div class="game-title">
-              <span>${escapeHtml(game.name)}</span>
-              <span class="rating">${ratingStar} ${game.rating}</span>
-            </div>
-            <div class="game-meta">
-              <span>🎮 ${game.genre.charAt(0).toUpperCase() + game.genre.slice(1)}</span>
-              <span>💎 ID: ${game.id}</span>
-            </div>
-            <div class="game-desc">${escapeHtml(game.description.length > 100 ? game.description.slice(0, 100) + '...' : game.description)}</div>
-            <a href="#" class="play-link" data-id="${game.id}">▶ PLAY NOW →</a>
-          </div>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 GameVault</h1>
+            <div class="subtitle">Your Ultimate Gaming Collection</div>
+            <div class="stats" id="gameStats">Loading games...</div>
         </div>
-      `;
-    }
-    gamesContainer.innerHTML = html;
-    gameCountDisplay.innerHTML = `🎮 ${gamesArray.length} epic games ready  |  total IDs: ${masterGames.length}`;
-    
-    // attach click handlers for "play" links (demo simulation)
-    document.querySelectorAll('.play-link').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const gameId = link.getAttribute('data-id');
-        const foundGame = masterGames.find(g => g.id == gameId);
-        alert(`🎮 Launching "${foundGame?.name || 'game'}" (ID: ${gameId})\n⚡ Full version would start now! ⚡`);
-      });
-    });
-  }
-  
-  // simple escape to prevent injection
-  function escapeHtml(str) {
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-      return c;
-    });
-  }
 
-  // filter logic: combine search + genre
-  function filterGames() {
-    const searchTerm = searchInput.value.trim().toLowerCase();
-    const selectedGenre = genreFilter.value;
-    
-    let filtered = [...masterGames];
-    
-    if (searchTerm !== '') {
-      filtered = filtered.filter(game => 
-        game.name.toLowerCase().includes(searchTerm) || 
-        game.genre.toLowerCase().includes(searchTerm) ||
-        game.id.toString().includes(searchTerm) ||
-        (game.description && game.description.toLowerCase().includes(searchTerm))
-      );
-    }
-    
-    if (selectedGenre !== 'all') {
-      filtered = filtered.filter(game => game.genre === selectedGenre);
-    }
-    
-    currentFilteredGames = filtered;
-    renderGames(currentFilteredGames);
-  }
-  
-  function resetFilters() {
-    searchInput.value = '';
-    genreFilter.value = 'all';
-    filterGames();
-  }
-  
-  // ---- LOAD DATA (simulate fetch from data.json) ----
-  // According to task: "create a games.html that uses data.json for ids and has 100+ games"
-  // We'll simulate loading external JSON but for self-contained reliability, we generate but also mimic fetch.
-  // Additionally, we add explicit "data.json" fetch attempt if present but ensure at least 100 games.
-  // For full robustness, we generate the data then treat it as loaded from JSON.
-  // But to comply, we also show a console note that we're using internal dataset structured as JSON.
-  // Additionally we allow if the user serves a real data.json it could override, but we guarantee 100+.
-  
-  function loadGameData() {
-    // First generate high quality dataset with ids (>=100 games)
-    const generated = generateGamesLibrary();
-    // try to fetch external "data.json" if available (optional but respects spec)
-    fetch('./data.json')
-      .then(response => {
-        if (response.ok) return response.json();
-        else throw new Error('no external json');
-      })
-      .then(externalData => {
-        // if external data is array and has at least some items, we merge/use it? But we need ids and 100+ games.
-        if (Array.isArray(externalData) && externalData.length >= 100) {
-          console.log('✅ Loaded external data.json with', externalData.length, 'games');
-          masterGames = externalData.map((g, idx) => {
-            // ensure id field exists
-            if (!g.id) g.id = idx + 1;
-            if (!g.genre) g.genre = "action";
-            if (!g.rating) g.rating = 4.0;
-            if (!g.coverGradient) g.coverGradient = "background-image: linear-gradient(145deg, #20293f, #0a1020);";
-            return g;
-          });
-        } else {
-          throw new Error('external data insufficient or under 100 games');
-        }
-        if (masterGames.length >= 100) {
-          finalizeAndRender();
-        } else {
-          useGeneratedFallback();
-        }
-      })
-      .catch(err => {
-        console.warn('⚠️ data.json not found or invalid, using built-in 126-game library (IDs 1..126)');
-        useGeneratedFallback();
-      });
-  }
-  
-  function useGeneratedFallback() {
-    masterGames = generateGamesLibrary(); // 126 games
-    finalizeAndRender();
-  }
-  
-  function finalizeAndRender() {
-    // ensure each game has proper cover fallback if missing
-    for (let i = 0; i < masterGames.length; i++) {
-      const g = masterGames[i];
-      if (!g.coverGradient) {
-        const gradient = `background-image: linear-gradient(125deg, #191e30, #0e1222), url('https://placehold.co/600x400/2c3753/aac3ff?text=ID${g.id}')`;
-        g.coverGradient = gradient;
-      }
-      if (!g.description) g.description = "Epic adventure awaits in this legendary title.";
-      if (!g.rating) g.rating = (3.5 + (g.id % 25)/10);
-      if (!g.genre) g.genre = "action";
-    }
-    // initial filtering & display
-    currentFilteredGames = [...masterGames];
-    renderGames(currentFilteredGames);
-    // attach event listeners after render
-    searchInput.addEventListener('input', filterGames);
-    genreFilter.addEventListener('change', filterGames);
-    resetBtn.addEventListener('click', resetFilters);
-  }
-  
-  // Initialize the whole thing
-  loadGameData();
-</script>
-</body>
-</html>
+        <div class="filters">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search by name, genre, or ID...">
+            </div>
+            <div class="genre-filter">
+                <select id="genreSelect">
+                    <option value="all">All Genres</option>
+                    <option value="action">Action</option>
+                    <option value="rpg">RPG</option>
+                    <option value="adventure">Adventure</option>
+                    <option value="puzzle">Puzzle</option>
+                    <option value="strategy">Strategy</option>
+                    <option value="racing">Racing</option>
+                    <option value="sports">Sports</option>
+                    <option value="horror">Horror</option>
+                    <option value="simulation">Simulation</option>
+                    <option value="casual">Casual</option>
+                </select>
+            </div>
+            <button class="reset-btn" id="resetBtn">Reset Filters</button>
+        </div>
+
+        <div id="gamesContainer" class="games-grid">
+            <div class="loading">Loading 100+ amazing games...</div>
+        </div>
+
+        <footer>
+            <p>🎮 Powered by data.json | 100+ Games with Unique IDs | Click Play to Start Your Adventure!</p>
+        </footer>
+    </div>
+
+    <script>
+        let allGames = [];
+        let filteredGames = [];
+
+        // DOM elements
+        const gamesContainer = document.getElementById('gamesContainer');
+        const searchInput = document.getElementById('searchInput');
+        const genreSelect = document.getElementById('genreSelect');
+        const resetBtn = document.getElementById('resetBtn');
+        const gameStats = document.getElementById('gameStats');
+
+        // Load games from data.json
+        async function loadGames() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load data.json');
+                }
+                const data = await response.json();
+                allGames = data.games;
+                filteredGames = [...allGames];
