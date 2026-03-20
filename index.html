@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>✦ COSMIC SINGULARITY ✦ | Upgrades & Space Dust</title>
+    <title>⚫ BLACK HOLE ODYSSEY ⚫ | Singularity Clicker</title>
     <style>
         * {
             user-select: none;
@@ -21,7 +21,6 @@
             align-items: center;
         }
 
-        /* main wrapper - scrollable if needed, but keeps all UI visible */
         .game-world {
             max-width: 1400px;
             width: 100%;
@@ -50,7 +49,6 @@
             max-height: 65vh;
         }
 
-        /* top info panel */
         .info-panel {
             margin-top: 20px;
             display: flex;
@@ -137,7 +135,6 @@
             box-shadow: 0 0 12px #ffaa55;
         }
 
-        /* upgrades section */
         .upgrades-section {
             background: #03010cee;
             backdrop-filter: blur(10px);
@@ -200,10 +197,6 @@
             font-size: 1rem;
             color: #88ffaa;
             font-weight: bold;
-        }
-
-        .upgrade-price span {
-            font-size: 1.2rem;
         }
 
         .achievements-section {
@@ -273,10 +266,56 @@
             color: #a57c4a;
         }
 
+        /* Admin modal */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-panel {
+            background: #1f1a12;
+            border: 2px solid #ffaa55;
+            border-radius: 48px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            color: #ffddbb;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+        .admin-panel h2 {
+            margin-top: 0;
+            color: #ffaa66;
+        }
+        .admin-panel input {
+            background: #2a241a;
+            border: 1px solid #ffaa55;
+            color: #ffddbb;
+            padding: 8px 12px;
+            border-radius: 40px;
+            width: 80%;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+        .admin-panel button {
+            background: #3a2c1e;
+            margin: 5px;
+        }
+        .close-admin {
+            background: #5a3a2a;
+            margin-top: 20px;
+        }
         @media (max-width: 900px) {
             .info-panel { flex-direction: column; align-items: stretch; }
             .upgrade-card { min-width: 160px; }
-            .dust-box span { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -284,8 +323,8 @@
 <div class="game-world">
     <div class="game-container">
         <div class="title">
-            ⚛️ GRAVITAR ORIGIN ⚛️
-            <small>▸ click to devour mass · earn SPACE DUST · buy cosmic upgrades ◂</small>
+            ⚫ BLACK HOLE ODYSSEY ⚫
+            <small>▸ click to devour mass · earn SPACE DUST · transcend reality ◂</small>
         </div>
         <canvas id="cosmicCanvas" width="900" height="600"></canvas>
 
@@ -296,7 +335,7 @@
             </div>
             <div class="level-box">
                 <div style="font-size:0.7rem;">🌀 COSMIC STAGE</div>
-                <div class="level-name" id="stageName">NEUTRON STAR</div>
+                <div class="level-name" id="stageName">MICRO QUASAR</div>
             </div>
             <div class="dust-box">
                 <div style="font-size:0.7rem;">✨ SPACE DUST</div>
@@ -307,7 +346,7 @@
                 <div class="next-threshold" id="nextThresholdTxt">next stage</div>
             </div>
             <div class="click-stats">
-                💥 <span id="clickPower">+3</span> M☉ <span style="font-size:0.7rem;">+<span id="dustPerClick">1</span>✨</span>
+                💥 <span id="clickPower">+5</span> M☉ <span style="font-size:0.7rem;">+<span id="dustPerClick">1</span>✨</span>
             </div>
             <button id="resetBtn">⟳ RESET COSMOS</button>
         </div>
@@ -317,54 +356,79 @@
     <div class="upgrades-section">
         <div class="upgrades-header">
             <h3>🚀 COSMIC UPGRADES (buy with Space Dust)</h3>
-            <span style="font-size:0.8rem; color:#ffcc88;" id="dustTotalTip">spend to enhance singularity</span>
+            <span style="font-size:0.8rem; color:#ffcc88;" id="dustTotalTip">enhance your singularity</span>
         </div>
-        <div class="upgrades-grid" id="upgradesList">
-            <!-- dynamic upgrades injected -->
-        </div>
+        <div class="upgrades-grid" id="upgradesList"></div>
     </div>
 
     <div class="achievements-section">
         <div class="upgrades-header">
             <h3>🏆 ACHIEVEMENTS · COSMIC LEGACY</h3>
-            <span id="achievementCount">0 / 12</span>
+            <span id="achievementCount">0 / 18</span>
         </div>
         <div class="achievements-grid" id="achievementsList"></div>
     </div>
-    <footer>▼ each click gives mass + space dust · upgrades boost power, passive income & dust gains</footer>
+    <footer>▼ each click gives mass + space dust · upgrades boost power, passive income & dust gains · press <strong>K</strong> for admin console</footer>
 </div>
-<div id="toastMsg" class="toast-notify" style="transform: translateX(120%);">✨ Unlocked</div>
+
+<!-- Admin Modal -->
+<div id="adminModal" class="admin-modal">
+    <div class="admin-panel">
+        <h2>🔮 ADMIN CONSOLE 🔮</h2>
+        <p>Enter password:</p>
+        <input type="password" id="adminPassword" placeholder="password">
+        <button id="adminLoginBtn">Unlock</button>
+        <div id="adminControls" style="display: none; margin-top: 20px;">
+            <h3>Admin Powers</h3>
+            <button id="adminAddDust">✨ Add 10,000 Space Dust</button>
+            <button id="adminAddMass">🌌 Add 1,000 M☉ Mass</button>
+            <button id="adminReset">💀 Hard Reset</button>
+            <button id="adminUnlockAll">🏆 Unlock All Achievements</button>
+        </div>
+        <button class="close-admin" id="closeAdminBtn">Close</button>
+    </div>
+</div>
+
+<div id="toastMsg" class="toast-notify" style="transform: translateX(120%);">✨</div>
 
 <script>
     (function(){
-        // ----------------------------- STAGES -----------------------------
+        // ----------------------------- STAGES (expanded with fictional and beyond) -----------------------------
         const STAGES = [
-            { name: "NEUTRON STAR",    minMass: 0,     maxMass: 30,    colorCore: "#6bc8ff", visualType: "neutron",    clickBonus: 2,  radiusBase: 22, radiusMassFactor: 0.9, lensIntensity: 0.2, gravityDir: "inward"  },
-            { name: "STELLAR BLACK HOLE", minMass: 30,  maxMass: 200,   colorCore: "#aa6644", visualType: "blackhole",   clickBonus: 5,  radiusBase: 28, radiusMassFactor: 1.2, lensIntensity: 1.2, gravityDir: "inward"  },
-            { name: "INTERMEDIATE VOID", minMass: 200,  maxMass: 800,   colorCore: "#bb7744", visualType: "blackhole",   clickBonus: 9,  radiusBase: 36, radiusMassFactor: 1.3, lensIntensity: 1.9, gravityDir: "inward"  },
-            { name: "SUPERMASSIVE ABYSS", minMass: 800, maxMass: 2500,  colorCore: "#dd9955", visualType: "blackhole",   clickBonus: 14, radiusBase: 44, radiusMassFactor: 1.4, lensIntensity: 2.5, gravityDir: "inward"  },
-            { name: "WHITE HOLE",      minMass: 2500,  maxMass: 6200,   colorCore: "#ffefb0", visualType: "whitehole",   clickBonus: 28, radiusBase: 48, radiusMassFactor: 0.95, lensIntensity: 2.0, gravityDir: "outward" },
-            { name: "HYPERQUASAR",     minMass: 6200,  maxMass: Infinity, colorCore: "#ffaa77", visualType: "quasar",      clickBonus: 42, radiusBase: 55, radiusMassFactor: 0.9, lensIntensity: 3.2, gravityDir: "inward"  }
+            { name: "MICRO QUASAR",        minMass: 0,     maxMass: 50,    visual: "blackhole", radiusBase: 24, radiusFactor: 0.9, lensIntensity: 0.6, clickBonus: 2,  essenceMult: 1.0, color: "#665533" },
+            { name: "STELLAR REMNANT",      minMass: 50,    maxMass: 200,   visual: "blackhole", radiusBase: 30, radiusFactor: 1.1, lensIntensity: 1.1, clickBonus: 4,  essenceMult: 1.2, color: "#aa7744" },
+            { name: "INTERMEDIATE VOID",    minMass: 200,   maxMass: 800,   visual: "blackhole", radiusBase: 38, radiusFactor: 1.2, lensIntensity: 1.7, clickBonus: 7,  essenceMult: 1.5, color: "#cc8844" },
+            { name: "SUPERMASSIVE ABYSS",   minMass: 800,   maxMass: 2500,  visual: "blackhole", radiusBase: 46, radiusFactor: 1.3, lensIntensity: 2.3, clickBonus: 11, essenceMult: 1.9, color: "#dd9955" },
+            { name: "ULTRA. SINGULARITY",   minMass: 2500,  maxMass: 7000,  visual: "blackhole", radiusBase: 55, radiusFactor: 1.4, lensIntensity: 3.0, clickBonus: 16, essenceMult: 2.4, color: "#ffaa66" },
+            { name: "WHITE HOLE",           minMass: 7000,  maxMass: 15000, visual: "whitehole", radiusBase: 60, radiusFactor: 0.95, lensIntensity: 2.5, clickBonus: 25, essenceMult: 3.0, color: "#ffefb0" },
+            { name: "HYPERQUASAR",          minMass: 15000, maxMass: 35000, visual: "quasar",    radiusBase: 70, radiusFactor: 0.9, lensIntensity: 3.5, clickBonus: 38, essenceMult: 3.8, color: "#ffaa77" },
+            { name: "WORMHOLE NEXUS",       minMass: 35000, maxMass: 75000, visual: "wormhole",  radiusBase: 78, radiusFactor: 0.85, lensIntensity: 4.2, clickBonus: 55, essenceMult: 4.8, color: "#bb88ff" },
+            { name: "VACUUM METASTABILITY", minMass: 75000, maxMass: 150000, visual: "void",      radiusBase: 85, radiusFactor: 0.8, lensIntensity: 5.0, clickBonus: 80, essenceMult: 6.0, color: "#aa88ff" },
+            { name: "OMEGA SINGULARITY",    minMass: 150000, maxMass: Infinity, visual: "omega",    radiusBase: 95, radiusFactor: 0.75, lensIntensity: 6.0, clickBonus: 120, essenceMult: 8.0, color: "#ff88cc" }
         ];
 
-        // ----------------------------- UPGRADES -----------------------------
+        // ----------------------------- UPGRADES (expanded) -----------------------------
         const UPGRADES = [
             { id: "click_power", name: "⚡ GRAVITATIONAL SURGE", desc: "+2 M☉ per click", basePrice: 25, effectType: "clickBonus", effectValue: 2, priceMultiplier: 1.5, level: 0 },
-            { id: "dust_multiplier", name: "✨ DUST NEBULA", desc: "+20% dust per click", basePrice: 40, effectType: "dustMultiplier", effectValue: 0.2, priceMultiplier: 1.6, level: 0 },
+            { id: "dust_multiplier", name: "✨ DUST NEBULA", desc: "+20% dust per click", basePrice: 40, effectType: "dustMult", effectValue: 0.2, priceMultiplier: 1.6, level: 0 },
             { id: "passive_dust", name: "🌀 ACCRETION DRIFT", desc: "+0.5 dust/sec passive", basePrice: 60, effectType: "passiveIncome", effectValue: 0.5, priceMultiplier: 1.7, level: 0 },
-            { id: "mass_boost", name: "💫 SINGULARITY ECHO", desc: "+10% total mass gain", basePrice: 100, effectType: "massMultiplier", effectValue: 0.1, priceMultiplier: 1.8, level: 0 }
+            { id: "mass_boost", name: "💫 SINGULARITY ECHO", desc: "+10% total mass gain", basePrice: 100, effectType: "massMult", effectValue: 0.1, priceMultiplier: 1.8, level: 0 },
+            { id: "hawking_radiation", name: "🔥 HAWKING RADIATION", desc: "+5% dust per click (multiplicative)", basePrice: 150, effectType: "dustMultAdd", effectValue: 0.05, priceMultiplier: 1.9, level: 0 },
+            { id: "event_horizon", name: "🌀 EVENT HORIZON EXPANSION", desc: "+5% mass per click", basePrice: 200, effectType: "massMultAdd", effectValue: 0.05, priceMultiplier: 2.0, level: 0 },
+            { id: "quantum_foam", name: "✨ QUANTUM FOAM", desc: "+0.8 dust/sec passive", basePrice: 250, effectType: "passiveIncomeAdd", effectValue: 0.8, priceMultiplier: 2.1, level: 0 },
+            { id: "dark_energy", name: "🌑 DARK ENERGY", desc: "+15% total mass gain", basePrice: 350, effectType: "massMult", effectValue: 0.15, priceMultiplier: 2.2, level: 0 }
         ];
 
-        // upgrade state
-        let upgrades = JSON.parse(JSON.stringify(UPGRADES)); // clone
-        let spaceDust = 150;   // starting dust
-        let totalClicks = 0;
-        let clicksInNeutron = 0;
+        // Game state
         let mass = 12.0;
+        let spaceDust = 150;
+        let totalClicks = 0;
+        let totalDustEarned = 0;
         let currentStage = STAGES[0];
+        let upgrades = JSON.parse(JSON.stringify(UPGRADES));
         let earnedAchievements = new Set();
 
-        // canvas & visuals
+        // Canvas & particles
         const canvas = document.getElementById('cosmicCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -378,17 +442,17 @@
         // DOM elements
         const massDisplay = document.getElementById('massDisplay');
         const stageNameSpan = document.getElementById('stageName');
+        const dustDisplay = document.getElementById('dustDisplay');
         const progressFill = document.getElementById('progressFill');
         const nextThresholdSpan = document.getElementById('nextThresholdTxt');
         const clickPowerSpan = document.getElementById('clickPower');
-        const dustDisplay = document.getElementById('dustDisplay');
         const dustPerClickSpan = document.getElementById('dustPerClick');
+        const upgradesListDiv = document.getElementById('upgradesList');
         const achievementsGrid = document.getElementById('achievementsList');
         const achievementCountSpan = document.getElementById('achievementCount');
-        const upgradesListDiv = document.getElementById('upgradesList');
         const toastDiv = document.getElementById('toastMsg');
 
-        // helper: get stage by mass
+        // Helper: get stage by mass
         function getStageFromMass(massVal) {
             for(let s of STAGES) {
                 if(massVal >= s.minMass && massVal < s.maxMass) return s;
@@ -396,13 +460,12 @@
             return STAGES[STAGES.length-1];
         }
 
-        // update stage & UI
         function updateStage() {
             const newStage = getStageFromMass(mass);
             if(newStage !== currentStage) {
                 currentStage = newStage;
-                for(let i=0;i<45;i++) spawnStageParticles(1);
-                if(currentStage.name !== "NEUTRON STAR") clicksInNeutron = 0;
+                spawnBurstParticles(50);
+                showToast(`✨ EVOLVED: ${currentStage.name} ✨`);
             }
             stageNameSpan.innerText = currentStage.name;
             updateProgressBar();
@@ -410,94 +473,64 @@
         }
 
         function computeRadius() {
-            let base = currentStage.radiusBase + Math.sqrt(mass) * currentStage.radiusMassFactor;
-            return Math.min(215, Math.max(26, base));
+            let base = currentStage.radiusBase + Math.sqrt(mass) * currentStage.radiusFactor;
+            return Math.min(220, Math.max(28, base));
         }
 
         function updateProgressBar() {
             const idx = STAGES.findIndex(s => s.name === currentStage.name);
-            let next = STAGES[idx+1];
-            if(next) {
-                let progress = ((mass - currentStage.minMass) / (next.minMass - currentStage.minMass)) * 100;
+            const nextStage = STAGES[idx+1];
+            if(nextStage) {
+                let progress = ((mass - currentStage.minMass) / (nextStage.minMass - currentStage.minMass)) * 100;
                 progress = Math.min(100, Math.max(0, progress));
                 progressFill.style.width = progress + "%";
-                nextThresholdSpan.innerHTML = `➔ next: ${next.name} at ${next.minMass} M☉ (${Math.floor(progress)}%)`;
+                nextThresholdSpan.innerHTML = `➔ next: ${nextStage.name} at ${nextStage.minMass} M☉ (${Math.floor(progress)}%)`;
             } else {
                 progressFill.style.width = "100%";
-                nextThresholdSpan.innerHTML = `✦ APEX OF REALITY ✦`;
+                nextThresholdSpan.innerHTML = `✦ THE ABSOLUTE ONE ✦`;
             }
         }
 
-        // calculate total click mass bonus from upgrades & stage
-        function getTotalClickMassBonus() {
-            let bonus = 3 + currentStage.clickBonus;
-            const clickUpgrade = upgrades.find(u => u.id === "click_power");
-            if(clickUpgrade) bonus += clickUpgrade.level * clickUpgrade.effectValue;
-            // mass multiplier
-            const massMultUp = upgrades.find(u => u.id === "mass_boost");
+        function getClickMass() {
+            let base = 5 + currentStage.clickBonus;
+            const clickUp = upgrades.find(u => u.id === "click_power");
+            if(clickUp) base += clickUp.level * clickUp.effectValue;
             let multiplier = 1;
-            if(massMultUp) multiplier += massMultUp.level * massMultUp.effectValue;
-            return Math.floor(bonus * multiplier);
+            const massMult = upgrades.find(u => u.id === "mass_boost");
+            if(massMult) multiplier += massMult.level * massMult.effectValue;
+            const eventHorizon = upgrades.find(u => u.id === "event_horizon");
+            if(eventHorizon) multiplier += eventHorizon.level * eventHorizon.effectValue;
+            return Math.floor(base * multiplier);
         }
 
-        // dust per click with upgrades
         function getDustPerClick() {
             let base = 1 + Math.floor(mass / 200);
-            const dustMultUp = upgrades.find(u => u.id === "dust_multiplier");
             let multiplier = 1;
-            if(dustMultUp) multiplier += dustMultUp.level * dustMultUp.effectValue;
+            const dustMult = upgrades.find(u => u.id === "dust_multiplier");
+            if(dustMult) multiplier += dustMult.level * dustMult.effectValue;
+            const hawking = upgrades.find(u => u.id === "hawking_radiation");
+            if(hawking) multiplier += hawking.level * hawking.effectValue;
             return Math.floor(base * multiplier);
         }
 
         function updateClickInfo() {
-            clickPowerSpan.innerText = "+" + getTotalClickMassBonus();
+            clickPowerSpan.innerText = "+" + getClickMass();
             dustPerClickSpan.innerText = getDustPerClick();
         }
 
-        // add mass & dust
         function addMassAndDust(massAmount, dustAmount) {
-            if(massAmount > 0) {
-                mass += massAmount;
-                updateStage();
-                currentRadius = computeRadius();
-                updateUI();
-                spawnStageParticles(Math.min(15, Math.floor(massAmount/2) + 3));
-                clickFlash = 0.8;
-            }
+            if(massAmount > 0) mass += massAmount;
             if(dustAmount > 0) {
                 spaceDust += dustAmount;
-                if(spaceDust < 0) spaceDust = 0;
-                dustDisplay.innerText = Math.floor(spaceDust);
+                totalDustEarned += dustAmount;
             }
+            if(spaceDust < 0) spaceDust = 0;
+            updateStage();
+            currentRadius = computeRadius();
             updateUI();
-            checkAllAchievements();
-        }
-
-        // click handler
-        function onCanvasClick(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            let mouseX = (e.clientX - rect.left) * scaleX;
-            let mouseY = (e.clientY - rect.top) * scaleY;
-            const dx = mouseX - centerX;
-            const dy = mouseY - centerY;
-            const dist = Math.hypot(dx, dy);
-            if(dist <= currentRadius + 28) {
-                let massGain = getTotalClickMassBonus();
-                let dustGain = getDustPerClick();
-                addMassAndDust(massGain, dustGain);
-                totalClicks++;
-                if(currentStage.name === "NEUTRON STAR") clicksInNeutron++;
-                if(navigator.vibrate) navigator.vibrate(20);
-            } else {
-                ctx.beginPath();
-                ctx.arc(mouseX, mouseY, 9, 0, Math.PI*2);
-                ctx.fillStyle = "#ffaa6655";
-                ctx.fill();
-            }
-            checkAllAchievements();
-            updateUI();
+            if(massAmount > 0) spawnClickParticles(massAmount);
+            if(dustAmount > 0) clickFlash = 0.7;
+            checkAchievements();
         }
 
         function updateUI() {
@@ -508,18 +541,40 @@
             renderUpgrades();
         }
 
-        // upgrade purchase logic
+        // Click handler
+        function onCanvasClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let mx = (e.clientX - rect.left) * scaleX;
+            let my = (e.clientY - rect.top) * scaleY;
+            const dx = mx - centerX;
+            const dy = my - centerY;
+            const dist = Math.hypot(dx, dy);
+            if(dist <= currentRadius + 28) {
+                let massGain = getClickMass();
+                let dustGain = getDustPerClick();
+                addMassAndDust(massGain, dustGain);
+                totalClicks++;
+                if(navigator.vibrate) navigator.vibrate(20);
+            } else {
+                ctx.beginPath();
+                ctx.arc(mx, my, 10, 0, Math.PI*2);
+                ctx.fillStyle = "#ffaa6655";
+                ctx.fill();
+            }
+        }
+
+        // Upgrade purchase
         function purchaseUpgrade(upgrade) {
             let price = Math.floor(upgrade.basePrice * Math.pow(upgrade.priceMultiplier, upgrade.level));
             if(spaceDust >= price) {
                 spaceDust -= price;
                 upgrade.level++;
-                // apply upgrade effect
                 updateUI();
-                showToast(`Upgraded ${upgrade.name} to lv.${upgrade.level}!`);
-                // re-render upgrades
+                showToast(`⬆️ ${upgrade.name} upgraded to lv.${upgrade.level}!`);
                 renderUpgrades();
-                checkAllAchievements();
+                checkAchievements();
             } else {
                 showToast(`❌ Not enough Dust! Need ${price} ✨`, true);
             }
@@ -535,76 +590,69 @@
                 card.innerHTML = `
                     <div class="upgrade-name">${up.name} Lv.${up.level}</div>
                     <div class="upgrade-desc">${up.desc}</div>
-                    <div class="upgrade-price">💰 ${price} <span>✨</span></div>
+                    <div class="upgrade-price">💰 ${price} ✨</div>
                 `;
                 upgradesListDiv.appendChild(card);
             }
         }
 
-        // passive income: dust per second based on "passive_dust" upgrade
-        let lastTimestamp = 0;
+        // Passive income
         function startPassiveIncome() {
             if(passiveInterval) clearInterval(passiveInterval);
             passiveInterval = setInterval(() => {
-                const passiveUp = upgrades.find(u => u.id === "passive_dust");
-                let income = 0;
-                if(passiveUp) income += passiveUp.level * passiveUp.effectValue;
-                // also tiny mass drift (existing cosmic drift)
-                if(income > 0) {
-                    addMassAndDust(0, income);
-                }
-                // cosmic mass drift (original)
-                if(mass < 15000) {
-                    let tinyMass = 0.18 + (STAGES.findIndex(s=>s.name===currentStage.name) * 0.08);
+                let passive = 0;
+                const drift = upgrades.find(u => u.id === "passive_dust");
+                if(drift) passive += drift.level * drift.effectValue;
+                const foam = upgrades.find(u => u.id === "quantum_foam");
+                if(foam) passive += foam.level * foam.effectValue;
+                if(passive > 0) addMassAndDust(0, passive);
+                // Cosmic drift mass
+                if(mass < 300000) {
+                    let tinyMass = 0.2 + (STAGES.findIndex(s=>s.name===currentStage.name) * 0.1);
                     addMassAndDust(tinyMass, 0);
                 }
             }, 1000);
         }
 
-        // ----------------- ACHIEVEMENTS (unchanged logic but extended) -----------------
+        // ----- ACHIEVEMENTS (expanded) -----
         const ACHIEVEMENTS = [
             { id: "first_click", name: "FIRST PULSE", desc: "First click", check: (s) => s.totalClicks >= 1 },
-            { id: "neutron_heart", name: "NEUTRON HEART", desc: "Reach Neutron Star", check: (s) => s.mass >= 5 },
-            { id: "event_horizon", name: "EVENT HORIZON", desc: "Become a Black Hole", check: (s) => s.mass >= 30 },
+            { id: "micro_quasar", name: "MICRO QUASAR", desc: "Start your journey", check: (s) => s.mass >= 5 },
+            { id: "stellar_remanant", name: "STELLAR REMNANT", desc: "Reach 50 M☉", check: (s) => s.mass >= 50 },
             { id: "intermediate_void", name: "INTERMEDIATE VOID", desc: "200 M☉", check: (s) => s.mass >= 200 },
             { id: "supermassive", name: "SUPERMASSIVE", desc: "800 M☉", check: (s) => s.mass >= 800 },
-            { id: "white_exodus", name: "WHITE EXODUS", desc: "White Hole stage", check: (s) => s.currentStageName === "WHITE HOLE" && s.mass >= 2500 },
+            { id: "white_hole", name: "WHITE HOLE", desc: "Reach White Hole stage", check: (s) => s.currentStageName === "WHITE HOLE" },
             { id: "hyperquasar", name: "HYPERQUASAR LORD", desc: "Hyperquasar stage", check: (s) => s.currentStageName === "HYPERQUASAR" },
+            { id: "wormhole", name: "WORMHOLE NEXUS", desc: "Enter Wormhole Nexus", check: (s) => s.currentStageName === "WORMHOLE NEXUS" },
+            { id: "omega", name: "OMEGA SINGULARITY", desc: "Reach Omega Singularity", check: (s) => s.currentStageName === "OMEGA SINGULARITY" },
             { id: "click_fiend", name: "COSMIC CLICKER", desc: "1000 clicks", check: (s) => s.totalClicks >= 1000 },
             { id: "mass_colossus", name: "COLOSSUS", desc: "5000 M☉", check: (s) => s.mass >= 5000 },
-            { id: "neutron_blast", name: "PULSAR BLAST", desc: "50 clicks in Neutron", check: (s) => s.clicksInNeutron >= 50 },
-            { id: "white_radiance", name: "RADIANT CORE", desc: "White Hole + 5500 M☉", check: (s) => s.mass >= 5500 },
-            { id: "singularity_god", name: "SINGULARITY GOD", desc: "Hyperquasar & 8000 M☉", check: (s) => s.currentStageName === "HYPERQUASAR" && s.mass >= 8000 },
-            { id: "dust_lord", name: "DUST COLLECTOR", desc: "Earn 5000 total dust", check: (s) => s.totalDustEarned >= 5000 }
+            { id: "dust_lord", name: "DUST COLLECTOR", desc: "5000 total dust", check: (s) => s.totalDustEarned >= 5000 },
+            { id: "dust_billionaire", name: "DUST BILLIONAIRE", desc: "100,000 dust earned", check: (s) => s.totalDustEarned >= 100000 },
+            { id: "upgrade_master", name: "UPGRADE MASTER", desc: "Any upgrade level 10", check: (s) => s.maxUpgradeLevel >= 10 },
+            { id: "all_upgrades", name: "COSMIC PERFECTION", desc: "All upgrades at level 5+", check: (s) => s.allUpgradesLevel5 },
+            { id: "vacuum", name: "VACUUM METASTABILITY", desc: "Reach Vacuum Metastability", check: (s) => s.currentStageName === "VACUUM METASTABILITY" },
+            { id: "eternity", name: "ETERNAL SINGULARITY", desc: "Mass over 200,000 M☉", check: (s) => s.mass >= 200000 },
+            { id: "godhood", name: "GODHOOD", desc: "Omega Singularity + 300k mass", check: (s) => s.currentStageName === "OMEGA SINGULARITY" && s.mass >= 300000 }
         ];
 
-        let totalDustEarned = 0;
-        function addMassAndDust(massAmount, dustAmount) {
-            if(massAmount > 0) mass += massAmount;
-            if(dustAmount > 0) {
-                spaceDust += dustAmount;
-                totalDustEarned += dustAmount;
-            }
-            if(spaceDust < 0) spaceDust = 0;
-            updateStage();
-            currentRadius = computeRadius();
-            updateUI();
-            if(massAmount > 0) spawnStageParticles(Math.min(15, Math.floor(massAmount/2)+3));
-            if(dustAmount > 0) clickFlash = 0.6;
-            checkAllAchievements();
-        }
+        let stateForAchievements = {
+            mass: 0, totalClicks: 0, totalDustEarned: 0, currentStageName: "",
+            maxUpgradeLevel: 0, allUpgradesLevel5: false
+        };
 
-        function checkAllAchievements() {
-            const state = {
+        function checkAchievements() {
+            stateForAchievements = {
                 mass: mass,
                 totalClicks: totalClicks,
+                totalDustEarned: totalDustEarned,
                 currentStageName: currentStage.name,
-                clicksInNeutron: clicksInNeutron,
-                totalDustEarned: totalDustEarned
+                maxUpgradeLevel: Math.max(...upgrades.map(u => u.level), 0),
+                allUpgradesLevel5: upgrades.every(u => u.level >= 5)
             };
             let anyNew = false;
             ACHIEVEMENTS.forEach(ach => {
-                if(!earnedAchievements.has(ach.id) && ach.check(state)) {
+                if(!earnedAchievements.has(ach.id) && ach.check(stateForAchievements)) {
                     earnedAchievements.add(ach.id);
                     showToast(`🏆 ACHIEVEMENT: ${ach.name} 🏆`);
                     anyNew = true;
@@ -628,22 +676,19 @@
         }
 
         function showToast(msg, isError = false) {
-            if(toastTimeout) clearTimeout(toastTimeout);
+            if(window.toastTimeout) clearTimeout(window.toastTimeout);
             toastDiv.style.transform = "translateX(0%)";
-            toastDiv.style.borderLeftColor = isError ? "#ff8866" : "#ffaa66";
+            toastDiv.style.borderLeftColor = isError ? "#aa5533" : "#ffaa66";
             toastDiv.innerHTML = msg;
-            toastTimeout = setTimeout(() => {
+            window.toastTimeout = setTimeout(() => {
                 toastDiv.style.transform = "translateX(120%)";
             }, 2300);
         }
-        let toastTimeout;
 
-        // reset game
         function resetGame() {
             mass = 12.0;
-            totalClicks = 0;
-            clicksInNeutron = 0;
             spaceDust = 150;
+            totalClicks = 0;
             totalDustEarned = 0;
             upgrades.forEach(u => u.level = 0);
             earnedAchievements.clear();
@@ -651,49 +696,66 @@
             updateStage();
             currentRadius = computeRadius();
             updateUI();
-            renderUpgrades();
-            for(let i=0;i<40;i++) spawnStageParticles(1);
-            checkAllAchievements();
+            spawnBurstParticles(40);
+            checkAchievements();
             updateAchievementUI();
         }
 
-        // ----- particle system (same as before) -----
-        function spawnStageParticles(amount) {
-            for(let i=0;i<amount;i++) {
-                if(currentStage.gravityDir === "outward") addOutwardParticle();
-                else addInwardParticle();
+        // ----- PARTICLE SYSTEM (visuals) -----
+        function spawnClickParticles(amount) {
+            for(let i=0; i<Math.min(25, 5+Math.floor(amount/5)); i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1 + Math.random() * 4;
+                particles.push({
+                    x: centerX, y: centerY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 0.9,
+                    size: 2 + Math.random() * 6,
+                    color: `hsl(${30 + Math.random() * 40}, 85%, 60%)`,
+                    outward: true
+                });
             }
         }
-        function addInwardParticle() {
-            const angle = Math.random() * Math.PI * 2;
-            const dist = currentRadius + 12 + Math.random() * 50;
-            const x = centerX + Math.cos(angle) * dist;
-            const y = centerY + Math.sin(angle) * dist;
-            particles.push({ x, y, vx: (centerX - x)*0.055 + (Math.random()-0.5)*1.2, vy: (centerY - y)*0.055 + (Math.random()-0.5)*1.2, life: 0.95, size: 2+Math.random()*5, color: `hsl(${25+Math.random()*35},85%,58%)`, outward: false });
+
+        function spawnBurstParticles(count) {
+            for(let i=0;i<count;i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 0.8 + Math.random() * 3;
+                particles.push({
+                    x: centerX + (Math.random()-0.5)*40,
+                    y: centerY + (Math.random()-0.5)*40,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 1.0,
+                    size: 2 + Math.random() * 6,
+                    color: `hsl(${20 + Math.random() * 60}, 85%, 65%)`,
+                    outward: true
+                });
+            }
         }
-        function addOutwardParticle() {
-            const angle = Math.random() * Math.PI * 2;
-            const speed = 1.2+Math.random()*2.8;
-            particles.push({ x: centerX+(Math.random()-0.5)*8, y: centerY+(Math.random()-0.5)*8, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1.0, size: 2+Math.random()*4, color: `hsl(${45+Math.random()*30},95%,65%)`, outward: true });
-        }
+
         function updateParticles() {
-            for(let i=0;i<particles.length;i++) {
+            for(let i=0; i<particles.length; i++) {
                 const p = particles[i];
-                if(p.outward) {
-                    p.x += p.vx; p.y += p.vy; p.life -= 0.012;
-                    if(p.x<-80||p.x>w+80||p.y<-80||p.y>h+80||p.life<=0.02) { particles.splice(i,1); i--; }
-                } else {
-                    const dx = centerX-p.x, dy = centerY-p.y, dist = Math.hypot(dx,dy);
-                    if(dist<currentRadius+3) { particles.splice(i,1); i--; continue; }
-                    const pull = 0.11*(1+currentStage.lensIntensity*0.1);
-                    p.vx += dx*0.008*pull; p.vy += dy*0.008*pull;
-                    p.x += p.vx; p.y += p.vy; p.life -= 0.007;
-                    if(p.life<=0.03||p.x<-50||p.x>w+50||p.y<-50||p.y>h+50) { particles.splice(i,1); i--; }
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.015;
+                if(p.x < -50 || p.x > w+50 || p.y < -50 || p.y > h+50 || p.life <= 0) {
+                    particles.splice(i,1);
+                    i--;
                 }
             }
         }
-        // ----- RENDERING (simplified but retains full visual identity) -----
-        function initStars() { starField = []; for(let i=0;i<550;i++) starField.push({ x: Math.random()*w, y: Math.random()*h, radius: 1+Math.random()*2.2, alpha: 0.5+Math.random()*0.5 }); }
+
+        // Star field and lensing
+        function initStars() {
+            starField = [];
+            for(let i=0;i<550;i++) {
+                starField.push({ x: Math.random()*w, y: Math.random()*h, radius: 1+Math.random()*2.2, alpha: 0.5+Math.random()*0.5 });
+            }
+        }
+
         function drawStarsAndLensing() {
             for(let s of starField) {
                 const dx = s.x-centerX, dy = s.y-centerY, dist = Math.hypot(dx,dy);
@@ -704,32 +766,160 @@
                     let offY = Math.sin(ang)*factor*currentRadius*0.18;
                     ctx.beginPath(); ctx.arc(s.x+offX, s.y+offY, s.radius,0,Math.PI*2);
                     ctx.fillStyle = `rgba(255,210,140,${s.alpha*0.85})`; ctx.fill();
-                } else { ctx.beginPath(); ctx.arc(s.x,s.y,s.radius,0,Math.PI*2); ctx.fillStyle = `rgba(210,180,130,${s.alpha*0.7})`; ctx.fill(); }
+                } else {
+                    ctx.beginPath(); ctx.arc(s.x,s.y,s.radius,0,Math.PI*2);
+                    ctx.fillStyle = `rgba(210,180,130,${s.alpha*0.7})`; ctx.fill();
+                }
             }
         }
-        function drawBlackHoleVariant() { /* stub, full version integrated */ 
+
+        function drawBlackHole() {
             const rad = currentRadius;
             const grad = ctx.createRadialGradient(centerX-6,centerY-6,rad*0.2,centerX,centerY,rad);
-            grad.addColorStop(0,"#331d0a"); grad.addColorStop(0.7,"#6a401a"); grad.addColorStop(1,"#000");
+            grad.addColorStop(0,"#331d0a");
+            grad.addColorStop(0.7,"#6a401a");
+            grad.addColorStop(1,"#000");
             ctx.beginPath(); ctx.arc(centerX,centerY,rad*0.96,0,Math.PI*2); ctx.fillStyle=grad; ctx.fill();
             ctx.beginPath(); ctx.ellipse(centerX,centerY,rad*0.85,rad*0.55,0,0,Math.PI*2); ctx.fillStyle=`rgba(255,100,30,0.3)`; ctx.fill();
         }
-        function drawNeutronStar() { /* simplified */ const rad=currentRadius; ctx.beginPath(); ctx.arc(centerX,centerY,rad*0.9,0,Math.PI*2); ctx.fillStyle="#aaf0ff"; ctx.fill(); }
-        function drawWhiteHole() { const rad=currentRadius; ctx.beginPath(); ctx.arc(centerX,centerY,rad*1.0,0,Math.PI*2); ctx.fillStyle="#fff5cc"; ctx.fill(); }
-        function drawQuasar() { drawBlackHoleVariant(); ctx.beginPath(); ctx.ellipse(centerX,centerY,currentRadius*1.1,currentRadius*0.7,0,0,Math.PI*2); ctx.fillStyle=`rgba(255,200,80,0.5)`; ctx.fill(); }
-        function render() {
-            ctx.clearRect(0,0,w,h); ctx.fillStyle="#010005"; ctx.fillRect(0,0,w,h);
-            drawStarsAndLensing();
-            if(currentStage.visualType==="neutron") drawNeutronStar();
-            else if(currentStage.visualType==="whitehole") drawWhiteHole();
-            else if(currentStage.visualType==="quasar") drawQuasar();
-            else drawBlackHoleVariant();
-            for(let p of particles) { ctx.beginPath(); ctx.arc(p.x,p.y,p.size*Math.min(1,p.life*1.2),0,Math.PI*2); ctx.fillStyle=p.color||`rgba(255,140,50,${p.life*0.7})`; ctx.fill(); }
-            if(clickFlash>0) { ctx.beginPath(); ctx.arc(centerX,centerY,currentRadius*(1+clickFlash*0.6),0,Math.PI*2); ctx.fillStyle=`rgba(255,210,100,${clickFlash*0.45})`; ctx.fill(); clickFlash-=0.045; }
+
+        function drawWhiteHole() {
+            const rad = currentRadius;
+            const gradOut = ctx.createRadialGradient(centerX,centerY,rad*0.4,centerX,centerY,rad*1.8);
+            gradOut.addColorStop(0,"#fff5cc");
+            gradOut.addColorStop(0.7,"#ffdd99");
+            gradOut.addColorStop(1,"#ffaa66");
+            ctx.beginPath(); ctx.arc(centerX,centerY,rad*1.2,0,Math.PI*2); ctx.fillStyle=gradOut; ctx.fill();
+            ctx.beginPath(); ctx.arc(centerX,centerY,rad*0.9,0,Math.PI*2); ctx.fillStyle="#fff2cf"; ctx.fill();
         }
-        function animate() { updateParticles(); currentRadius=computeRadius(); render(); requestAnimationFrame(animate); }
-        function resizeCanvas() { w=canvas.width; h=canvas.height; centerX=w/2; centerY=h/2; initStars(); currentRadius=computeRadius(); }
-        
+
+        function drawQuasar() {
+            drawBlackHole();
+            ctx.beginPath(); ctx.ellipse(centerX,centerY,currentRadius*1.1,currentRadius*0.7,0,0,Math.PI*2);
+            ctx.fillStyle=`rgba(255,200,80,0.5)`; ctx.fill();
+        }
+
+        function drawWormhole() {
+            drawBlackHole();
+            for(let i=0;i<3;i++) {
+                ctx.beginPath();
+                ctx.ellipse(centerX,centerY,currentRadius*(0.8+i*0.2),currentRadius*(0.5+i*0.1),Date.now()*0.003,0,Math.PI*2);
+                ctx.strokeStyle=`rgba(180,130,255,0.7)`;
+                ctx.stroke();
+            }
+        }
+
+        function drawVoid() {
+            drawBlackHole();
+            ctx.fillStyle="rgba(0,0,0,0.9)";
+            ctx.beginPath(); ctx.arc(centerX,centerY,currentRadius*1.1,0,Math.PI*2); ctx.fill();
+        }
+
+        function drawOmega() {
+            drawQuasar();
+            ctx.font = `${Math.floor(currentRadius*0.5)}px monospace`;
+            ctx.fillStyle="#ff88ff";
+            ctx.shadowBlur=15;
+            ctx.fillText("Ω", centerX-15, centerY+15);
+            ctx.shadowBlur=0;
+        }
+
+        function render() {
+            ctx.clearRect(0,0,w,h);
+            ctx.fillStyle="#010005"; ctx.fillRect(0,0,w,h);
+            drawStarsAndLensing();
+            if(currentStage.visual === "whitehole") drawWhiteHole();
+            else if(currentStage.visual === "quasar") drawQuasar();
+            else if(currentStage.visual === "wormhole") drawWormhole();
+            else if(currentStage.visual === "void") drawVoid();
+            else if(currentStage.visual === "omega") drawOmega();
+            else drawBlackHole();
+            for(let p of particles) {
+                ctx.beginPath(); ctx.arc(p.x,p.y,p.size*Math.min(1,p.life*1.2),0,Math.PI*2);
+                ctx.fillStyle=p.color||`rgba(255,140,50,${p.life*0.7})`; ctx.fill();
+            }
+            if(clickFlash>0) {
+                ctx.beginPath(); ctx.arc(centerX,centerY,currentRadius*(1+clickFlash*0.6),0,Math.PI*2);
+                ctx.fillStyle=`rgba(255,210,100,${clickFlash*0.45})`; ctx.fill();
+                clickFlash-=0.045;
+            }
+        }
+
+        function animate() {
+            updateParticles();
+            currentRadius = computeRadius();
+            render();
+            requestAnimationFrame(animate);
+        }
+
+        function resizeCanvas() {
+            w = canvas.width;
+            h = canvas.height;
+            centerX = w/2;
+            centerY = h/2;
+            initStars();
+            currentRadius = computeRadius();
+        }
+
+        // Admin Console
+        const adminModal = document.getElementById('adminModal');
+        const adminPassword = document.getElementById('adminPassword');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminControls = document.getElementById('adminControls');
+        const closeAdminBtn = document.getElementById('closeAdminBtn');
+        const adminAddDust = document.getElementById('adminAddDust');
+        const adminAddMass = document.getElementById('adminAddMass');
+        const adminReset = document.getElementById('adminReset');
+        const adminUnlockAll = document.getElementById('adminUnlockAll');
+
+        function showAdminModal() {
+            adminModal.style.display = 'flex';
+            adminPassword.value = '';
+            adminControls.style.display = 'none';
+        }
+
+        function closeAdminModal() {
+            adminModal.style.display = 'none';
+        }
+
+        adminLoginBtn.onclick = () => {
+            if(adminPassword.value === "matter") {
+                adminControls.style.display = 'block';
+                showToast("🔓 Admin access granted", false);
+            } else {
+                showToast("❌ Invalid password", true);
+            }
+        };
+
+        adminAddDust.onclick = () => {
+            addMassAndDust(0, 10000);
+            showToast("✨ +10,000 Space Dust added", false);
+        };
+        adminAddMass.onclick = () => {
+            addMassAndDust(1000, 0);
+            showToast("🌌 +1,000 M☉ added", false);
+        };
+        adminReset.onclick = () => {
+            if(confirm("Hard reset will erase all progress. Continue?")) {
+                resetGame();
+                showToast("💀 Game has been hard reset", false);
+            }
+        };
+        adminUnlockAll.onclick = () => {
+            ACHIEVEMENTS.forEach(ach => earnedAchievements.add(ach.id));
+            updateAchievementUI();
+            showToast("🏆 All achievements unlocked!", false);
+        };
+        closeAdminBtn.onclick = closeAdminModal;
+        window.onkeydown = (e) => {
+            if(e.key === 'k' || e.key === 'K') {
+                e.preventDefault();
+                showAdminModal();
+            }
+        };
+        window.onclick = (e) => { if(e.target === adminModal) closeAdminModal(); };
+
+        // Initialization
         canvas.addEventListener('click', onCanvasClick);
         document.getElementById('resetBtn').addEventListener('click', resetGame);
         window.addEventListener('resize', resizeCanvas);
@@ -738,6 +928,7 @@
         startPassiveIncome();
         animate();
         renderUpgrades();
+        updateAchievementUI();
     })();
 </script>
 </body>
