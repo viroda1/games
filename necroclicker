@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>⚰️ NECROMANCER'S TOME ⚰️ | Soul Clicker</title>
+    <style>
+        * {
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at 30% 20%, #1a0f0a, #0a0503);
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-world {
+            max-width: 1300px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .game-container {
+            background: rgba(20, 10, 5, 0.75);
+            backdrop-filter: blur(5px);
+            border-radius: 56px;
+            padding: 20px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(180, 70, 30, 0.2);
+            border: 1px solid #aa6644;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 36px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 0 2px #aa664450;
+            cursor: pointer;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 900 / 600;
+            max-height: 65vh;
+        }
+
+        .info-panel {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            background: #1a0c07cc;
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            padding: 12px 28px;
+            border: 1px solid #aa6644aa;
+        }
+
+        .souls-box, .level-box, .click-stats, .essence-box {
+            background: #000000aa;
+            padding: 6px 18px;
+            border-radius: 40px;
+            text-align: center;
+        }
+
+        .souls-box span {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #aaeeff;
+            text-shadow: 0 0 8px #44aaff;
+        }
+
+        .essence-box span {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #ffaa88;
+            text-shadow: 0 0 5px #ff8844;
+        }
+
+        .level-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #eebb88;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .next-progress {
+            flex: 2;
+            min-width: 180px;
+        }
+
+        .progress-bar-bg {
+            background: #2a1a12;
+            border-radius: 30px;
+            height: 14px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: radial-gradient(circle, #aa8866, #aa5533);
+            border-radius: 30px;
+            transition: width 0.2s ease;
+        }
+
+        .click-stats span {
+            font-weight: bold;
+            color: #ffaa66;
+        }
+
+        button {
+            background: #2f1e14;
+            border: 1px solid #aa6644;
+            color: #ffccaa;
+            font-family: monospace;
+            font-weight: bold;
+            padding: 8px 20px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s linear;
+        }
+
+        button:hover {
+            background: #6a3a28;
+            transform: scale(0.97);
+            box-shadow: 0 0 12px #aa6644;
+        }
+
+        .upgrades-section {
+            background: #0f0603ee;
+            backdrop-filter: blur(10px);
+            border-radius: 36px;
+            padding: 16px 22px;
+            margin-top: 20px;
+            border: 1px solid #aa6644aa;
+        }
+
+        .upgrades-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #aa6644aa;
+            padding-bottom: 8px;
+        }
+
+        .upgrades-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: flex-start;
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .upgrade-card {
+            background: #2a1a12cc;
+            border-radius: 32px;
+            padding: 12px 18px;
+            min-width: 200px;
+            flex: 1 1 200px;
+            backdrop-filter: blur(4px);
+            border: 1px solid #aa6644aa;
+            transition: 0.1s;
+            cursor: pointer;
+        }
+
+        .upgrade-card:hover {
+            background: #4a2e1ecc;
+            transform: translateY(-2px);
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #eebb88;
+        }
+
+        .upgrade-desc {
+            font-size: 0.75rem;
+            color: #bbaa88;
+            margin: 5px 0;
+        }
+
+        .upgrade-price {
+            font-size: 1rem;
+            color: #88ffaa;
+            font-weight: bold;
+        }
+
+        .achievements-section {
+            margin-top: 20px;
+            background: #0f0603ee;
+            backdrop-filter: blur(8px);
+            border-radius: 36px;
+            padding: 16px 22px;
+            border: 1px solid #aa6644aa;
+        }
+
+        .achievements-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 5px 5px;
+        }
+
+        .achievement-card {
+            background: #1e120bcc;
+            border-radius: 60px;
+            padding: 6px 18px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-left: 4px solid #aa6644;
+            color: #eeddcc;
+        }
+
+        .achievement-card.locked {
+            opacity: 0.5;
+            border-left-color: #553322;
+            filter: grayscale(0.3);
+        }
+
+        .toast-notify {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1a0a05dd;
+            backdrop-filter: blur(12px);
+            border-left: 6px solid #aa6644;
+            padding: 12px 24px;
+            border-radius: 60px;
+            color: #ffccaa;
+            font-weight: bold;
+            z-index: 999;
+            transition: 0.2s;
+            pointer-events: none;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin-bottom: 12px;
+            color: #eebb88;
+            text-shadow: 0 0 10px #aa5533;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 15px;
+            color: #aa8866;
+        }
+
+        @media (max-width: 900px) {
+            .info-panel { flex-direction: column; align-items: stretch; }
+            .upgrade-card { min-width: 160px; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-world">
+    <div class="game-container">
+        <div class="title">
+            📖 NECROMANCER'S TOME 📖
+            <small>▸ click the grimoire · harvest souls · master forbidden arts ◂</small>
+        </div>
+        <canvas id="grimoireCanvas" width="900" height="600"></canvas>
+
+        <div class="info-panel">
+            <div class="souls-box">
+                <div style="font-size:0.7rem;">💀 SOULS COLLECTED</div>
+                <span id="soulsDisplay">0</span>
+            </div>
+            <div class="level-box">
+                <div style="font-size:0.7rem;">📜 NECROMANCY TIER</div>
+                <div class="level-name" id="tierName">ACOLYTE</div>
+            </div>
+            <div class="essence-box">
+                <div style="font-size:0.7rem;">🔥 DARK ESSENCE</div>
+                <span id="essenceDisplay">0</span>
+            </div>
+            <div class="next-progress">
+                <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="next-threshold" id="nextThresholdTxt">next tier at 100 souls</div>
+            </div>
+            <div class="click-stats">
+                ⚡ <span id="clickPower">+5</span> souls per ritual
+            </div>
+            <button id="resetBtn">⟳ BURN THE TOME (reset)</button>
+        </div>
+    </div>
+
+    <!-- UPGRADES SECTION -->
+    <div class="upgrades-section">
+        <div class="upgrades-header">
+            <h3>🕯️ FORBIDDEN UPGRADES (cost: Dark Essence)</h3>
+            <span style="font-size:0.8rem; color:#ffaa88;">essence earned from rituals</span>
+        </div>
+        <div class="upgrades-grid" id="upgradesList"></div>
+    </div>
+
+    <div class="achievements-section">
+        <div class="upgrades-header">
+            <h3>🏆 SOUL ACHIEVEMENTS</h3>
+            <span id="achievementCount">0 / 12</span>
+        </div>
+        <div class="achievements-grid" id="achievementsList"></div>
+    </div>
+    <footer>▼ each click summons spirits · dark essence flows from powerful rituals · upgrades amplify your necromancy</footer>
+</div>
+<div id="toastMsg" class="toast-notify" style="transform: translateX(120%);">✨</div>
+
+<script>
+    (function(){
+        // ----- TIERS (based on total souls collected, not current spend) -----
+        const TIERS = [
+            { name: "ACOLYTE",        minSouls: 0,     maxSouls: 100,    color: "#6b4e3a", visual: "book",      clickBonus: 0,   essenceMult: 1.0 },
+            { name: "SOUL WEAVER",    minSouls: 100,   maxSouls: 500,    color: "#8b5e4a", visual: "book",      clickBonus: 2,   essenceMult: 1.3 },
+            { name: "BONE CALLER",    minSouls: 500,   maxSouls: 2000,   color: "#aa6e4a", visual: "skull",     clickBonus: 5,   essenceMult: 1.6 },
+            { name: "NECROMANCER",    minSouls: 2000,  maxSouls: 8000,   color: "#cc7e5a", visual: "skull",     clickBonus: 10,  essenceMult: 2.0 },
+            { name: "LICH LORD",      minSouls: 8000,  maxSouls: 25000,  color: "#ee8e6a", visual: "crown",     clickBonus: 18,  essenceMult: 2.5 },
+            { name: "DEITY OF DEATH", minSouls: 25000, maxSouls: Infinity, color: "#ffae8a", visual: "crown",     clickBonus: 30,  essenceMult: 3.2 }
+        ];
+
+        // ----- UPGRADES -----
+        const UPGRADES = [
+            { id: "soul_siphon", name: "💀 SOUL SIPHON", desc: "+3 souls per click", basePrice: 25, effectType: "clickBonus", effectValue: 3, priceMultiplier: 1.5, level: 0 },
+            { id: "essence_catalyst", name: "✨ ESSENCE CATALYST", desc: "+25% essence per click", basePrice: 40, effectType: "essenceMult", effectValue: 0.25, priceMultiplier: 1.6, level: 0 },
+            { id: "spectral_army", name: "👻 SPECTRAL ARMY", desc: "+1 soul/sec passive", basePrice: 60, effectType: "passiveSouls", effectValue: 1, priceMultiplier: 1.7, level: 0 },
+            { id: "dark_ritual", name: "🌑 DARK RITUAL", desc: "+10% total souls gain", basePrice: 100, effectType: "soulsMultiplier", effectValue: 0.1, priceMultiplier: 1.8, level: 0 }
+        ];
+
+        // Game state
+        let totalSoulsEarned = 0;   // lifetime souls (for tier progression)
+        let currentSouls = 0;       // spendable souls
+        let darkEssence = 0;
+        let totalClicks = 0;
+        let currentTier = TIERS[0];
+        let upgrades = JSON.parse(JSON.stringify(UPGRADES));
+        let earnedAchievements = new Set();
+        
+        // Passive interval
+        let passiveInterval;
+
+        // Canvas & particles
+        const canvas = document.getElementById('grimoireCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let clickFlash = 0;
+        let w = canvas.width, h = canvas.height;
+        let centerX = w/2, centerY = h/2;
+        let bookAngle = 0;
+
+        // DOM elements
+        const soulsDisplay = document.getElementById('soulsDisplay');
+        const essenceDisplay = document.getElementById('essenceDisplay');
+        const tierNameSpan = document.getElementById('tierName');
+        const progressFill = document.getElementById('progressFill');
+        const nextThresholdSpan = document.getElementById('nextThresholdTxt');
+        const clickPowerSpan = document.getElementById('clickPower');
+        const upgradesListDiv = document.getElementById('upgradesList');
+        const achievementsGrid = document.getElementById('achievementsList');
+        const achievementCountSpan = document.getElementById('achievementCount');
+        const toastDiv = document.getElementById('toastMsg');
+
+        // Helper: get tier from total souls earned
+        function getTierFromSouls(souls) {
+            for(let i=0; i<TIERS.length; i++) {
+                if(souls >= TIERS[i].minSouls && souls < TIERS[i].maxSouls) return TIERS[i];
+            }
+            return TIERS[TIERS.length-1];
+        }
+
+        function updateTier() {
+            const newTier = getTierFromSouls(totalSoulsEarned);
+            if(newTier !== currentTier) {
+                currentTier = newTier;
+                spawnBurstParticles(40);
+                showToast(`⚰️ TIER UP! You are now a ${currentTier.name} ⚰️`);
+            }
+            tierNameSpan.innerText = currentTier.name;
+            updateProgressBar();
+            updateClickInfo();
+        }
+
+        function updateProgressBar() {
+            const idx = TIERS.findIndex(t => t.name === currentTier.name);
+            const nextTier = TIERS[idx+1];
+            if(nextTier) {
+                let progress = ((totalSoulsEarned - currentTier.minSouls) / (nextTier.minSouls - currentTier.minSouls)) * 100;
+                progress = Math.min(100, Math.max(0, progress));
+                progressFill.style.width = progress + "%";
+                nextThresholdSpan.innerHTML = `➔ next: ${nextTier.name} at ${nextTier.minSouls} souls (${Math.floor(progress)}%)`;
+            } else {
+                progressFill.style.width = "100%";
+                nextThresholdSpan.innerHTML = `✦ MASTER OF DEATH ✦`;
+            }
+        }
+
+        // Compute click gain
+        function getClickSouls() {
+            let base = 5 + currentTier.clickBonus;
+            const siphon = upgrades.find(u => u.id === "soul_siphon");
+            if(siphon) base += siphon.level * siphon.effectValue;
+            const multUp = upgrades.find(u => u.id === "dark_ritual");
+            let multiplier = 1;
+            if(multUp) multiplier += multUp.level * multUp.effectValue;
+            return Math.floor(base * multiplier);
+        }
+
+        function getClickEssence() {
+            let base = 1 + Math.floor(totalSoulsEarned / 200);
+            const catalyst = upgrades.find(u => u.id === "essence_catalyst");
+            let multiplier = currentTier.essenceMult;
+            if(catalyst) multiplier += catalyst.level * catalyst.effectValue;
+            return Math.floor(base * multiplier);
+        }
+
+        function updateClickInfo() {
+            clickPowerSpan.innerText = "+" + getClickSouls();
+        }
+
+        // Add souls and essence
+        function addSoulsAndEssence(soulGain, essenceGain) {
+            if(soulGain > 0) {
+                totalSoulsEarned += soulGain;
+                currentSouls += soulGain;
+                updateTier();
+                spawnClickParticles(soulGain);
+                clickFlash = 0.8;
+            }
+            if(essenceGain > 0) {
+                darkEssence += essenceGain;
+            }
+            updateUI();
+            checkAchievements();
+        }
+
+        function updateUI() {
+            soulsDisplay.innerText = Math.floor(currentSouls);
+            essenceDisplay.innerText = Math.floor(darkEssence);
+            updateClickInfo();
+            renderUpgrades();
+        }
+
+        // Click handler
+        function onCanvasClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let mx = (e.clientX - rect.left) * scaleX;
+            let my = (e.clientY - rect.top) * scaleY;
+            // Click anywhere on canvas triggers ritual
+            let soulGain = getClickSouls();
+            let essenceGain = getClickEssence();
+            addSoulsAndEssence(soulGain, essenceGain);
+            totalClicks++;
+            if(navigator.vibrate) navigator.vibrate(30);
+        }
+
+        // Upgrade purchase
+        function purchaseUpgrade(upgrade) {
+            let price = Math.floor(upgrade.basePrice * Math.pow(upgrade.priceMultiplier, upgrade.level));
+            if(darkEssence >= price) {
+                darkEssence -= price;
+                upgrade.level++;
+                updateUI();
+                showToast(`📖 ${upgrade.name} upgraded to level ${upgrade.level}!`);
+                renderUpgrades();
+                checkAchievements();
+            } else {
+                showToast(`❌ Not enough Dark Essence! Need ${price}`, true);
+            }
+        }
+
+        function renderUpgrades() {
+            upgradesListDiv.innerHTML = "";
+            for(let up of upgrades) {
+                let price = Math.floor(up.basePrice * Math.pow(up.priceMultiplier, up.level));
+                let card = document.createElement('div');
+                card.className = "upgrade-card";
+                card.onclick = (e) => { e.stopPropagation(); purchaseUpgrade(up); };
+                card.innerHTML = `
+                    <div class="upgrade-name">${up.name} Lv.${up.level}</div>
+                    <div class="upgrade-desc">${up.desc}</div>
+                    <div class="upgrade-price">🔥 ${price} essence</div>
+                `;
+                upgradesListDiv.appendChild(card);
+            }
+        }
+
+        // Passive soul income from "spectral army"
+        function startPassiveIncome() {
+            if(passiveInterval) clearInterval(passiveInterval);
+            passiveInterval = setInterval(() => {
+                const passiveUp = upgrades.find(u => u.id === "spectral_army");
+                let passiveGain = 0;
+                if(passiveUp) passiveGain += passiveUp.level * passiveUp.effectValue;
+                if(passiveGain > 0) {
+                    addSoulsAndEssence(passiveGain, 0);
+                }
+                // also a tiny drift (atmosphere)
+                if(totalSoulsEarned < 50000) {
+                    addSoulsAndEssence(0.1, 0);
+                }
+            }, 1000);
+        }
+
+        // ----- ACHIEVEMENTS -----
+        const ACHIEVEMENTS = [
+            { id: "first_ritual", name: "FIRST RITUAL", desc: "First click", check: (s) => s.totalClicks >= 1 },
+            { id: "soul_collector", name: "SOUL COLLECTOR", desc: "100 total souls", check: (s) => s.totalSoulsEarned >= 100 },
+            { id: "bone_caller", name: "BONE CALLER", desc: "Reach Bone Caller tier", check: (s) => s.currentTierName === "BONE CALLER" },
+            { id: "necromancer", name: "NECROMANCER", desc: "Reach Necromancer tier", check: (s) => s.currentTierName === "NECROMANCER" },
+            { id: "lich_lord", name: "LICH LORD", desc: "Reach Lich Lord tier", check: (s) => s.currentTierName === "LICH LORD" },
+            { id: "deity_of_death", name: "DEITY OF DEATH", desc: "Reach final tier", check: (s) => s.currentTierName === "DEITY OF DEATH" },
+            { id: "click_fiend", name: "RELENTLESS", desc: "1000 clicks", check: (s) => s.totalClicks >= 1000 },
+            { id: "essence_master", name: "ESSENCE MASTER", desc: "5000 dark essence", check: (s) => s.darkEssence >= 5000 },
+            { id: "soul_hoarder", name: "SOUL HOARDER", desc: "10,000 souls held", check: (s) => s.currentSouls >= 10000 },
+            { id: "full_upgrade", name: "ARCANE MASTERY", desc: "Any upgrade at level 5", check: (s) => s.maxUpgradeLevel >= 5 },
+            { id: "million_souls", name: "SOUL MILLIONAIRE", desc: "1,000,000 total souls", check: (s) => s.totalSoulsEarned >= 1000000 },
+            { id: "spectral_army", name: "SPECTRAL LEGION", desc: "Passive upgrade level 5", check: (s) => s.spectralArmyLevel >= 5 }
+        ];
+
+        let stateForAchievements = {
+            totalSoulsEarned: 0,
+            currentSouls: 0,
+            darkEssence: 0,
+            totalClicks: 0,
+            currentTierName: "",
+            maxUpgradeLevel: 0,
+            spectralArmyLevel: 0
+        };
+
+        function checkAchievements() {
+            stateForAchievements = {
+                totalSoulsEarned: totalSoulsEarned,
+                currentSouls: currentSouls,
+                darkEssence: darkEssence,
+                totalClicks: totalClicks,
+                currentTierName: currentTier.name,
+                maxUpgradeLevel: Math.max(...upgrades.map(u => u.level), 0),
+                spectralArmyLevel: upgrades.find(u => u.id === "spectral_army")?.level || 0
+            };
+            let anyNew = false;
+            ACHIEVEMENTS.forEach(ach => {
+                if(!earnedAchievements.has(ach.id) && ach.check(stateForAchievements)) {
+                    earnedAchievements.add(ach.id);
+                    showToast(`🏆 ACHIEVEMENT: ${ach.name} 🏆`);
+                    anyNew = true;
+                }
+            });
+            if(anyNew) updateAchievementUI();
+        }
+
+        function updateAchievementUI() {
+            achievementsGrid.innerHTML = "";
+            let earned = 0;
+            ACHIEVEMENTS.forEach(ach => {
+                const unlocked = earnedAchievements.has(ach.id);
+                if(unlocked) earned++;
+                const div = document.createElement('div');
+                div.className = `achievement-card ${!unlocked ? 'locked' : ''}`;
+                div.innerHTML = `<span>${unlocked ? '🏅' : '🔒'}</span> ${ach.name} <span style="font-size:0.7rem;">${ach.desc}</span>`;
+                achievementsGrid.appendChild(div);
+            });
+            achievementCountSpan.innerText = `${earned} / ${ACHIEVEMENTS.length}`;
+        }
+
+        function showToast(msg, isError = false) {
+            if(window.toastTimeout) clearTimeout(window.toastTimeout);
+            toastDiv.style.transform = "translateX(0%)";
+            toastDiv.style.borderLeftColor = isError ? "#aa5533" : "#aa6644";
+            toastDiv.innerHTML = msg;
+            window.toastTimeout = setTimeout(() => {
+                toastDiv.style.transform = "translateX(120%)";
+            }, 2300);
+        }
+
+        // Reset game
+        function resetGame() {
+            totalSoulsEarned = 0;
+            currentSouls = 0;
+            darkEssence = 0;
+            totalClicks = 0;
+            upgrades.forEach(u => u.level = 0);
+            earnedAchievements.clear();
+            particles = [];
+            updateTier();
+            updateUI();
+            renderUpgrades();
+            checkAchievements();
+            updateAchievementUI();
+            spawnBurstParticles(30);
+        }
+
+        // ----- PARTICLE SYSTEM -----
+        function spawnClickParticles(amount) {
+            for(let i=0; i<Math.min(20, 5+Math.floor(amount/5)); i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1 + Math.random() * 4;
+                particles.push({
+                    x: centerX, y: centerY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 0.9,
+                    size: 2 + Math.random() * 6,
+                    color: `hsl(${30 + Math.random() * 40}, 80%, 60%)`,
+                    outward: true
+                });
+            }
+        }
+
+        function spawnBurstParticles(count) {
+            for(let i=0;i<count;i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 0.8 + Math.random() * 3;
+                particles.push({
+                    x: centerX + (Math.random()-0.5)*30,
+                    y: centerY + (Math.random()-0.5)*30,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 1.0,
+                    size: 2 + Math.random() * 5,
+                    color: `hsl(${20 + Math.random() * 50}, 85%, 65%)`,
+                    outward: true
+                });
+            }
+        }
+
+        function updateParticles() {
+            for(let i=0; i<particles.length; i++) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.015;
+                if(p.x < -50 || p.x > w+50 || p.y < -50 || p.y > h+50 || p.life <= 0) {
+                    particles.splice(i,1);
+                    i--;
+                }
+            }
+        }
+
+        // ----- CANVAS DRAWING (Grimoire theme) -----
+        function drawGrimoire() {
+            const radX = 140;
+            const radY = 100;
+            ctx.save();
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#aa5533";
+            // book cover
+            ctx.fillStyle = "#3a2a1e";
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, radX, radY, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = "#5a3e2a";
+            ctx.beginPath();
+            ctx.ellipse(centerX-5, centerY-3, radX-8, radY-6, 0, 0, Math.PI*2);
+            ctx.fill();
+            // pages
+            ctx.fillStyle = "#edd8b0";
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, radX-12, radY-12, 0, 0, Math.PI*2);
+            ctx.fill();
+            // skull emblem
+            ctx.fillStyle = "#4a2a1a";
+            ctx.beginPath();
+            ctx.arc(centerX, centerY-5, 22, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = "#eeddcc";
+            ctx.beginPath();
+            ctx.arc(centerX-8, centerY-10, 3, 0, Math.PI*2);
+            ctx.arc(centerX+8, centerY-10, 3, 0, Math.PI*2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY+2, 10, 8, 0, 0, Math.PI*2);
+            ctx.fillStyle = "#4a2a1a";
+            ctx.fill();
+            // runes
+            ctx.font = "24px 'Courier New'";
+            ctx.fillStyle = "#ffaa66";
+            ctx.shadowBlur = 8;
+            ctx.fillText("☠", centerX-12, centerY+12);
+            ctx.fillText("⚰", centerX+10, centerY+10);
+            ctx.restore();
+        }
+
+        function drawSkull() {
+            ctx.fillStyle = "#5a3e2a";
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, 80, 100, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = "#eeddcc";
+            ctx.beginPath();
+            ctx.ellipse(centerX-20, centerY-15, 15, 20, 0, 0, Math.PI*2);
+            ctx.ellipse(centerX+20, centerY-15, 15, 20, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = "#442200";
+            ctx.beginPath();
+            ctx.ellipse(centerX-20, centerY-12, 5, 8, 0, 0, Math.PI*2);
+            ctx.ellipse(centerX+20, centerY-12, 5, 8, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY+15, 28, 20, 0, 0, Math.PI*2);
+            ctx.fillStyle = "#442200";
+            ctx.fill();
+        }
+
+        function drawCrown() {
+            drawSkull();
+            ctx.fillStyle = "#ffcc88";
+            ctx.beginPath();
+            ctx.moveTo(centerX-35, centerY-55);
+            ctx.lineTo(centerX, centerY-85);
+            ctx.lineTo(centerX+35, centerY-55);
+            ctx.fill();
+            ctx.fillStyle = "#ffaa66";
+            for(let i=-2; i<=2; i++) {
+                ctx.beginPath();
+                ctx.rect(centerX + i*12 - 3, centerY-70, 6, 18);
+                ctx.fill();
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0,0,w,h);
+            ctx.fillStyle = "#080402";
+            ctx.fillRect(0,0,w,h);
+            // star-like particles
+            for(let i=0;i<200;i++) {
+                if(i%2===0) continue;
+                ctx.fillStyle = `rgba(255,200,150,${0.2+Math.sin(i)*0.1})`;
+                ctx.beginPath();
+                ctx.arc((i*131)%w, (i*97)%h, 1, 0, Math.PI*2);
+                ctx.fill();
+            }
+            // draw main object based on tier visual
+            if(currentTier.visual === "book") drawGrimoire();
+            else if(currentTier.visual === "skull") drawSkull();
+            else if(currentTier.visual === "crown") drawCrown();
+            // particles
+            for(let p of particles) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI*2);
+                ctx.fillStyle = p.color || `rgba(255,100,50,${p.life*0.8})`;
+                ctx.fill();
+            }
+            // click flash
+            if(clickFlash > 0) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 70 + clickFlash*40, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(255,150,80,${clickFlash*0.5})`;
+                ctx.fill();
+                clickFlash -= 0.045;
+            }
+            // glow
+            ctx.shadowBlur = 0;
+        }
+
+        function animate() {
+            updateParticles();
+            render();
+            requestAnimationFrame(animate);
+        }
+
+        function resizeCanvas() {
+            w = canvas.width;
+            h = canvas.height;
+            centerX = w/2;
+            centerY = h/2;
+        }
+
+        canvas.addEventListener('click', onCanvasClick);
+        document.getElementById('resetBtn').addEventListener('click', resetGame);
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        resetGame();
+        startPassiveIncome();
+        animate();
+        renderUpgrades();
+    })();
+</script>
+</body>
+</html>
