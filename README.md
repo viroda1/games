@@ -2,7 +2,7 @@
 
 **A cosmic clicker game where you evolve a singularity from a neutron star to a hyperquasar, collect Space Dust, buy upgrades, and unlock achievements.**
 
-👉 **Play now:** [Live Demo](https://viroda1.github.io/cosmic-singularity/) *(replace with actual link if deployed)*
+👉 **Play now:** [Live Demo](https://viroda1.github.io/games/) 
 
 ---
 
