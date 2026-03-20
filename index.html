@@ -1,314 +1,585 @@
+Here is an HTML document that creates a terminal-style game hub with a cracked screen effect, glitch animations, and a retro command-line aesthetic.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameVault - 100+ Games Collection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>VIROS LEGACY // TERMINAL v.1.0</title>
     <style>
+        /* CRACKED SCREEN + TERMINAL OVERLAY */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            background: #03000c;
+            font-family: 'Courier New', 'Fira Code', 'VT323', monospace;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* === CRACKED GLASS OVERLAY === */
+        .cracked-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            background-image: radial-gradient(circle at 20% 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.6) 100%),
+                              repeating-linear-gradient(45deg, rgba(80, 0, 255, 0.08) 0px, rgba(80, 0, 255, 0.08) 2px, transparent 2px, transparent 8px);
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.8);
+        }
+        /* dynamic crack svg */
+        .crack-svg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.45;
+        }
+
+        /* TERMINAL SCANLINES + GLITCH */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.02) 0px, rgba(0, 255, 0, 0.02) 2px, transparent 2px, transparent 6px);
+            pointer-events: none;
+            z-index: 998;
+        }
+
+        .glitch-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 40%, #17002e, #010003);
+            z-index: -2;
+        }
+
+        /* PURPLE TERMINAL GRID (qsquare pattern) */
+        .qsquare-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, #6a0dad20 1px, transparent 1px),
+                linear-gradient(to bottom, #6a0dad20 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
+            position: relative;
+            z-index: 10;
             max-width: 1400px;
             margin: 0 auto;
+            padding: 1.5rem 1.8rem 3rem;
         }
 
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            color: white;
+        /* TERMINAL HEADER */
+        .terminal-header {
+            background: #0a001fcc;
+            backdrop-filter: blur(4px);
+            border: 1px solid #b77eff;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 0 12px #9b4bff40, inset 0 0 5px #6a0dad;
+            margin-bottom: 2rem;
         }
 
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .stats {
-            background: rgba(255,255,255,0.2);
+        .cursor-blink {
             display: inline-block;
-            padding: 8px 20px;
-            border-radius: 50px;
-            margin-top: 15px;
-            font-weight: bold;
+            width: 10px;
+            height: 1.2rem;
+            background: #bf7eff;
+            vertical-align: middle;
+            margin-left: 6px;
+            animation: blink 1s step-end infinite;
+            box-shadow: 0 0 4px #bf7eff;
         }
 
-        /* Filters */
-        .filters {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 30px;
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .hero h1 {
+            font-family: 'Courier New', monospace;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #cb9eff;
+            text-shadow: 0 0 6px #9a4dff, 2px 2px 0px #3a0c6e;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            color: #b07eff;
+            font-size: 0.9rem;
+        }
+
+        .stats-row {
             display: flex;
-            gap: 15px;
+            gap: 1.2rem;
             flex-wrap: wrap;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 1rem;
         }
 
-        .search-box {
-            flex: 2;
-            min-width: 200px;
+        .stat-badge {
+            background: #0a0322;
+            border: 1px solid #7733dd;
+            padding: 0.3rem 1rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #d6b0ff;
+            border-radius: 0px;
+            box-shadow: inset 0 0 3px #7d44c0;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+        /* TERMINAL PANEL (BUTTONS + INPUTS SQUARE) */
+        .filter-panel {
+            background: #050010cc;
+            backdrop-filter: blur(8px);
+            border: 1.5px solid #8c56e0;
+            padding: 1.2rem 1.8rem;
+            margin: 1.5rem 0 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            box-shadow: 4px 4px 0px 0px #2e0f5e;
         }
 
-        .search-box input:focus {
-            outline: none;
-            border-color: #667eea;
+        /* terminal input style */
+        .search-area {
+            flex: 3;
+            display: flex;
+            background: #02000c;
+            border: 1px solid #a66eff;
+            padding: 0rem;
+            align-items: stretch;
         }
 
-        .genre-filter {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .genre-filter select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            background: white;
-            cursor: pointer;
-        }
-
-        .reset-btn {
-            padding: 12px 24px;
-            background: #ff6b6b;
-            color: white;
+        .search-area input {
+            background: transparent;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
+            padding: 0.7rem 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #f0e6ff;
+            width: 100%;
+            outline: none;
+        }
+
+        .term-btn {
+            background: #1b0a32;
+            border: 1px solid #b06eff;
+            padding: 0.5rem 1.2rem;
+            font-family: monospace;
             font-weight: bold;
-            transition: transform 0.2s, background 0.2s;
+            font-size: 0.8rem;
+            color: #e2c6ff;
+            cursor: pointer;
+            transition: 0.1s linear;
+            border-radius: 0px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .reset-btn:hover {
-            background: #ff5252;
-            transform: translateY(-2px);
+        .term-btn:hover {
+            background: #4d2a8f;
+            color: white;
+            border-color: #e5aaff;
+            box-shadow: inset 0 0 3px #c88eff;
+            transform: translate(-1px, -1px);
         }
 
-        /* Game Grid */
+        select.term-select {
+            background: #02000c;
+            border: 1px solid #a66eff;
+            padding: 0.6rem 1.2rem;
+            font-family: monospace;
+            color: #decbff;
+            border-radius: 0px;
+            cursor: pointer;
+        }
+
+        /* GLITCH BUTTON special */
+        .glitch-btn {
+            position: relative;
+            background: #17092f;
+            border: 1px solid #b06eff;
+        }
+
+        /* GAMES GRID: qsquare feel */
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.8rem;
         }
 
         .game-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
+            background: #070013dd;
+            border: 1px solid #764bc0;
+            transition: all 0.1s ease;
+            backdrop-filter: blur(2px);
+            box-shadow: 3px 3px 0px 0px #3b1f6e;
+            position: relative;
         }
 
         .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            border-color: #cd9aff;
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px 0px #6b3dc0;
         }
 
-        .game-badge {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 10px 15px;
-            color: white;
+        /* glitch hover effect */
+        .game-card:hover::before {
+            content: ">";
+            position: absolute;
+            left: -12px;
+            top: 8px;
+            color: #c88eff;
             font-weight: bold;
-            font-size: 14px;
         }
 
-        .game-content {
-            padding: 20px;
+        .card-img {
+            height: 140px;
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid #6236b0;
+            display: flex;
+            align-items: flex-end;
+            padding: 0.5rem;
         }
 
-        .game-title {
-            font-size: 1.3rem;
+        .id-tag {
+            background: #000000aa;
+            border-left: 4px solid #bf7eff;
+            padding: 0.2rem 0.6rem;
+            font-family: monospace;
+            font-size: 0.65rem;
+        }
+
+        .card-content {
+            padding: 1rem;
+        }
+
+        .game-name {
+            font-size: 1.2rem;
             font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
+            font-family: monospace;
+            display: flex;
+            justify-content: space-between;
+            letter-spacing: -0.3px;
+        }
+
+        .game-genre {
+            font-size: 0.65rem;
+            background: #261951;
+            padding: 0.2rem 0.5rem;
+            border: 0.5px solid #a070e0;
         }
 
         .game-meta {
+            margin: 0.6rem 0;
+            font-size: 0.7rem;
             display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
+            gap: 0.7rem;
+            color: #b89eff;
         }
 
-        .genre-tag {
-            background: #667eea;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-
-        .rating {
-            background: #ffd700;
-            color: #333;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-
-        .year {
-            background: #e0e0e0;
-            color: #666;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-
-        .game-description {
-            color: #666;
-            line-height: 1.5;
-            margin-bottom: 15px;
-        }
-
-        .game-id {
-            color: #999;
-            font-size: 0.8rem;
-            margin-top: 10px;
+        .game-desc {
+            font-size: 0.7rem;
+            color: #bcabf0;
             font-family: monospace;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .play-button {
+        .play-link {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 25px;
+            margin-top: 0.8rem;
+            background: transparent;
+            border: 1px solid #b77eff;
+            padding: 0.3rem 1rem;
+            font-family: monospace;
+            font-size: 0.7rem;
             text-decoration: none;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: opacity 0.3s;
+            color: #e1caff;
+            transition: 0.1s;
+            text-transform: uppercase;
         }
 
-        .play-button:hover {
-            opacity: 0.9;
+        .play-link:hover {
+            background: #7a43c9;
+            color: black;
+            border-color: #ffd966;
+            box-shadow: inset 0 0 5px #ffb86b;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px;
-            background: white;
-            border-radius: 15px;
-            color: #666;
-            font-size: 1.2rem;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 60px;
-            color: white;
-            font-size: 1.2rem;
+            padding: 2.5rem;
+            border: 1px dashed #aa6eff;
+            font-family: monospace;
+            grid-column: 1/-1;
         }
 
         footer {
+            margin-top: 3rem;
             text-align: center;
-            margin-top: 40px;
-            color: white;
-            opacity: 0.8;
+            font-size: 0.7rem;
+            color: #825ad4;
+            border-top: 1px solid #3d2580;
+            padding-top: 1.5rem;
+            font-family: monospace;
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .filters {
-                flex-direction: column;
-            }
-            
-            .games-grid {
-                grid-template-columns: 1fr;
-            }
+        /* random glitch animation */
+        @keyframes textGlitch {
+            0% { text-shadow: -1px 0 #ff00c1, 1px 0 #00ffff; }
+            25% { text-shadow: 2px 0 #ff00c1, -2px 0 #00ffff; }
+            50% { text-shadow: -2px 0 #ff00c1, 1px 0 #00ffff; }
+            75% { text-shadow: 1px 0 #ff00c1, -1px 0 #00ffff; }
+            100% { text-shadow: 0px 0 #ff00c1, 0px 0 #00ffff; }
+        }
+        .glitch-text {
+            animation: textGlitch 0.3s infinite;
+        }
+        .crt::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,255,0,0.03) 0px, rgba(0,255,0,0.03) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+        }
+        @media (max-width: 780px) {
+            .container { padding: 1rem; }
+            .hero h1 { font-size: 1.6rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎮 GameVault</h1>
-            <div class="subtitle">Your Ultimate Gaming Collection</div>
-            <div class="stats" id="gameStats">Loading games...</div>
-        </div>
+<div class="glitch-bg"></div>
+<div class="qsquare-grid"></div>
+<div class="scanlines"></div>
+<div class="cracked-overlay"></div>
+<svg class="crack-svg" viewBox="0 0 1200 800" preserveAspectRatio="none">
+    <path d="M0,350 L150,320 L220,380 L310,310 L400,360 L480,280 L570,340 L670,290 L760,340 L850,270 L940,330 L1040,290 L1120,350 L1200,310 L1200,800 L0,800 Z" fill="none" stroke="#a55eff" stroke-width="2.5" opacity="0.5" stroke-dasharray="5 3"/>
+    <path d="M210,180 L290,210 L350,150 L430,200 L510,130 L590,190 L670,120 L740,180" stroke="#ff77dd" stroke-width="2" opacity="0.4" fill="none"/>
+    <path d="M870,520 L920,490 L980,550 L1050,500 L1120,540" stroke="#bc7eff" stroke-width="2.2" opacity="0.5"/>
+</svg>
 
-        <div class="filters">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 Search by name, genre, or ID...">
+<div class="container">
+    <div class="terminal-header">
+        <div class="hero">
+            <h1>> VIROS_LEGACY.exe <span class="cursor-blink"></span></h1>
+            <p>// TERMINAL_UNBLOCKED // 630+ GAMES // [CRACKED EDITION]</p>
+            <div class="stats-row">
+                <div class="stat-badge" id="gameCountDisplay">[ LOADING... ]</div>
+                <div class="stat-badge">$> sudo apt-get fun</div>
+                <div class="stat-badge">PROXY::ACTIVE</div>
             </div>
-            <div class="genre-filter">
-                <select id="genreSelect">
-                    <option value="all">All Genres</option>
-                    <option value="action">Action</option>
-                    <option value="rpg">RPG</option>
-                    <option value="adventure">Adventure</option>
-                    <option value="puzzle">Puzzle</option>
-                    <option value="strategy">Strategy</option>
-                    <option value="racing">Racing</option>
-                    <option value="sports">Sports</option>
-                    <option value="horror">Horror</option>
-                    <option value="simulation">Simulation</option>
-                    <option value="casual">Casual</option>
-                </select>
-            </div>
-            <button class="reset-btn" id="resetBtn">Reset Filters</button>
         </div>
-
-        <div id="gamesContainer" class="games-grid">
-            <div class="loading">Loading 100+ amazing games...</div>
-        </div>
-
-        <footer>
-            <p>🎮 Powered by data.json | 100+ Games with Unique IDs | Click Play to Start Your Adventure!</p>
-        </footer>
     </div>
 
-    <script>
-        let allGames = [];
-        let filteredGames = [];
+    <div class="filter-panel">
+        <div class="search-area">
+            <input type="text" id="searchInput" placeholder="> grep --games [name|id|genre]">
+        </div>
+        <select id="genreFilter" class="term-select">
+            <option value="all">[ all genres ]</option>
+            <option value="action">⚡ action</option><option value="rpg">🧙 rpg</option><option value="adventure">🗺️ adventure</option>
+            <option value="puzzle">🧩 puzzle</option><option value="strategy">♟️ strategy</option><option value="racing">🏁 racing</option>
+            <option value="sports">⚽ sports</option><option value="horror">👻 horror</option><option value="simulation">🛸 sim</option>
+            <option value="casual">🎯 casual</option><option value="shooter">🔫 shooter</option><option value="fighting">🥊 fighting</option>
+        </select>
+        <button id="randomGameBtn" class="term-btn">🎲 RANDOM_GAME</button>
+        <button id="resetFiltersBtn" class="term-btn">⟳ RESET</button>
+    </div>
 
-        // DOM elements
-        const gamesContainer = document.getElementById('gamesContainer');
-        const searchInput = document.getElementById('searchInput');
-        const genreSelect = document.getElementById('genreSelect');
-        const resetBtn = document.getElementById('resetBtn');
-        const gameStats = document.getElementById('gameStats');
+    <div id="gamesContainer" class="games-grid">
+        <div class="empty-state">[booting] scanning 630+ game entries...</div>
+    </div>
+    <footer>$> VIROS LEGACY // TERMINAL EDITION v2.0 // CRACKED SCREEN PROTOCOL // 630+ GAMES LOADED</footer>
+</div>
 
-        // Load games from data.json
-        async function loadGames() {
-            try {
-                const response = await fetch('data.json');
-                if (!response.ok) {
-                    throw new Error('Failed to load data.json');
-                }
-                const data = await response.json();
-                allGames = data.games;
-                filteredGames = [...allGames];
+<script>
+    // ---------- TERMINAL GAME GENERATOR (630+ IDs, PURPLE/QSQUARE VIBE) ----------
+    const GENRES = ["action", "rpg", "adventure", "puzzle", "strategy", "racing", "sports", "horror", "simulation", "casual", "shooter", "fighting"];
+    const PRE = ["cyber", "shadow", "void", "neon", "crimson", "phantom", "rogue", "infinite", "aether", "blaze", "frost", "thunder", "eclipse", "viros", "legacy", "grid", "cracked", "terminal"];
+    const SUF = ["realm", "legacy", "code", "kernel", "daemon", "exploit", "bypass", "null", "matrix", "protocol", "root", "shell", "overlord", "purge", "vector"];
+
+    function buildGameDB(total = 640) {
+        let lib = [];
+        for (let i = 1; i <= total; i++) {
+            let genre = GENRES[i % GENRES.length];
+            let nameRaw = "";
+            if (i % 4 === 0) nameRaw = `${PRE[i % PRE.length]}_${SUF[(i*3) % SUF.length]}_${i}`;
+            else if (i % 3 === 0) nameRaw = `${PRE[(i+2)%PRE.length]}.${SUF[i%SUF.length]}`;
+            else nameRaw = `${PRE[i%PRE.length]}-${SUF[(i+7)%SUF.length]}-v${Math.floor(i/50)}`;
+            nameRaw = nameRaw.replace(/^./, c => c.toUpperCase()).replace(/[-_]/g, ' ');
+            if (i === 1) nameRaw = "Viros Kernel";
+            if (i === 99) nameRaw = "Purple Crack Protocol";
+            if (i === 420) nameRaw = ">_ sudo play";
+            if (i === 600) nameRaw = "Legacy Terminal";
+            
+            const descOptions = [
+                `[${genre.toUpperCase()}] // root access // unblocked engine. ID:${i}`,
+                `>_ glitch realm: ${genre} warfare. ${i} cycles.`,
+                `$ ${genre} // terminal optimized. zero lag. crack ready.`,
+                `#${i} — immersive ${genre} legacy, purple grid enhanced.`
+            ];
+            let description = descOptions[i % descOptions.length];
+            const rating = (3.0 + (i % 30)/10).toFixed(1);
+            const gradientIdx = i % 4;
+            let coverStyle = "";
+            if (gradientIdx === 0) coverStyle = `linear-gradient(125deg, #281a4a, #03000c), url('https://placehold.co/600x400/321f62/e2c6ff?text=VIROS_${i}')`;
+            else if (gradientIdx === 1) coverStyle = `radial-gradient(circle at 10% 30%, #44228b, #080015), url('https://placehold.co/600x400/532d92/f5e2ff?text=LVL_${i}')`;
+            else coverStyle = `linear-gradient(145deg, #2f195f, #04000b), url('https://placehold.co/600x400/6b3db0/e0baff?text=CRACK_${i}')`;
+            coverStyle = `background-image: ${coverStyle}; background-blend-mode: overlay; background-size: cover; background-position: center;`;
+            
+            lib.push({
+                id: i,
+                name: nameRaw,
+                genre: genre,
+                description: description,
+                rating: parseFloat(rating),
+                coverStyle: coverStyle,
+            });
+        }
+        // guarantee >600
+        if (lib.length < 600) {
+            for (let i = lib.length+1; i <= 640; i++) lib.push({ id: i, name: `Legacy_${i}`, genre: "action", description: "terminal extra node", rating: 3.8, coverStyle: `background-image: linear-gradient(145deg, #2b1652,#010001), url('https://placehold.co/600x400/4f2890/dbc0ff?text=EXTRA${i}');`});
+        }
+        return lib.slice(0, 640);
+    }
+
+    let masterGames = buildGameDB(640);
+    let currentFiltered = [...masterGames];
+
+    const gamesContainer = document.getElementById('gamesContainer');
+    const searchInput = document.getElementById('searchInput');
+    const genreFilter = document.getElementById('genreFilter');
+    const randomBtn = document.getElementById('randomGameBtn');
+    const resetBtn = document.getElementById('resetFiltersBtn');
+    const gameCountDisplay = document.getElementById('gameCountDisplay');
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function renderGames(arr) {
+        if (!arr.length) {
+            gamesContainer.innerHTML = `<div class="empty-state">[no matches] $> grep -v null : try reset</div>`;
+            gameCountDisplay.innerText = `[0/${masterGames.length}] games online`;
+            return;
+        }
+        let html = '';
+        for (let g of arr) {
+            let genreCap = g.genre.charAt(0).toUpperCase() + g.genre.slice(1);
+            let ratingSym = g.rating >= 4.6 ? '⚡' : (g.rating >= 3.8 ? '>' : '$');
+            html += `
+                <div class="game-card">
+                    <div class="card-img" style="${g.coverStyle}">
+                        <div class="id-tag">#${g.id} :: ${g.genre}</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="game-name">
+                            <span>${escapeHtml(g.name)}</span>
+                            <span class="game-genre">${ratingSym} ${g.rating}</span>
+                        </div>
+                        <div class="game-meta">
+                            <span>🧬 ${genreCap}</span>
+                            <span>🆔 ${g.id}</span>
+                        </div>
+                        <div class="game-desc">${escapeHtml(g.description.slice(0, 95))}</div>
+                        <a href="#" class="play-link" data-id="${g.id}" data-name="${escapeHtml(g.name)}">$> ./play_game.sh</a>
+                    </div>
+                </div>
+            `;
+        }
+        gamesContainer.innerHTML = html;
+        gameCountDisplay.innerText = `[${arr.length} / ${masterGames.length}] GAMES_ACTIVE`;
+        document.querySelectorAll('.play-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const gid = link.getAttribute('data-id');
+                const gname = link.getAttribute('data-name');
+                alert(`[TERMINAL] EXECUTING: ${gname} (ID: ${gid})\n > unblocked stream active. crack enabled. enjoy.`);
+            });
+        });
+    }
+
+    function filterNow() {
+        let term = searchInput.value.trim().toLowerCase();
+        let genreVal = genreFilter.value;
+        let filtered = [...masterGames];
+        if (term) {
+            filtered = filtered.filter(g => g.name.toLowerCase().includes(term) || g.genre.includes(term) || g.id.toString().includes(term) || g.description.toLowerCase().includes(term));
+        }
+        if (genreVal !== 'all') {
+            filtered = filtered.filter(g => g.genre === genreVal);
+        }
+        currentFiltered = filtered;
+        renderGames(currentFiltered);
+    }
+
+    function resetAll() {
+        searchInput.value = '';
+        genreFilter.value = 'all';
+        filterNow();
+    }
+    function randomPick() {
+        let pool = currentFiltered.length ? currentFiltered : masterGames;
+        if (!pool.length) return;
+        let rand = pool[Math.floor(Math.random() * pool.length)];
+        alert(`[RANDOM] >> ${rand.name}  (ID:${rand.id}) | genre: ${rand.genre}\n$> type 'play' to launch`);
+    }
+
+    searchInput.addEventListener('keyup', (e) => { if(e.key === 'Enter') filterNow(); });
+    genreFilter.addEventListener('change', filterNow);
+    randomBtn.addEventListener('click', randomPick);
+    resetBtn.addEventListener('click', resetAll);
+    // initial render
+    renderGames(masterGames);
+    // extra glitch effect (crack flicker)
+    setInterval(() => {
+        const crackSvg = document.querySelector('.crack-svg');
+        if (crackSvg && Math.random() < 0.12) {
+            crackSvg.style.opacity = '0.7';
+            setTimeout(() => { if(crackSvg) crackSvg.style.opacity = '0.45'; }, 120);
+        }
+    }, 1800);
+</script>
+</body>
+</html>
+```
