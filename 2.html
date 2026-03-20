@@ -22,7 +22,7 @@
         }
 
         .game-world {
-            max-width: 1300px;
+            max-width: 1400px;
             width: 100%;
             margin: 0 auto;
         }
@@ -266,6 +266,53 @@
             color: #aa8866;
         }
 
+        /* Admin Modal */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-panel {
+            background: #2a1a12;
+            border: 2px solid #aa6644;
+            border-radius: 48px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            color: #ffccaa;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+        .admin-panel h2 {
+            margin-top: 0;
+            color: #ffaa66;
+        }
+        .admin-panel input {
+            background: #1e120b;
+            border: 1px solid #aa6644;
+            color: #ffccaa;
+            padding: 8px 12px;
+            border-radius: 40px;
+            width: 80%;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+        .admin-panel button {
+            background: #3a2a1a;
+            margin: 5px;
+        }
+        .close-admin {
+            background: #5a3a2a;
+            margin-top: 20px;
+        }
         @media (max-width: 900px) {
             .info-panel { flex-direction: column; align-items: stretch; }
             .upgrade-card { min-width: 160px; }
@@ -317,43 +364,72 @@
     <div class="achievements-section">
         <div class="upgrades-header">
             <h3>🏆 SOUL ACHIEVEMENTS</h3>
-            <span id="achievementCount">0 / 12</span>
+            <span id="achievementCount">0 / 18</span>
         </div>
         <div class="achievements-grid" id="achievementsList"></div>
     </div>
-    <footer>▼ each click summons spirits · dark essence flows from powerful rituals · upgrades amplify your necromancy</footer>
+    <footer>▼ each click summons spirits · dark essence flows from powerful rituals · upgrades amplify your necromancy · press <strong>K</strong> for admin console</footer>
 </div>
+
+<!-- Admin Modal -->
+<div id="adminModal" class="admin-modal">
+    <div class="admin-panel">
+        <h2>🔮 ADMIN CONSOLE 🔮</h2>
+        <p>Enter password:</p>
+        <input type="password" id="adminPassword" placeholder="password">
+        <button id="adminLoginBtn">Unlock</button>
+        <div id="adminControls" style="display: none; margin-top: 20px;">
+            <h3>Admin Powers</h3>
+            <button id="adminAddEssence">🔥 Add 10,000 Dark Essence</button>
+            <button id="adminAddSouls">💀 Add 10,000 Souls</button>
+            <button id="adminReset">💀 Hard Reset</button>
+            <button id="adminUnlockAll">🏆 Unlock All Achievements</button>
+        </div>
+        <button class="close-admin" id="closeAdminBtn">Close</button>
+    </div>
+</div>
+
 <div id="toastMsg" class="toast-notify" style="transform: translateX(120%);">✨</div>
 
 <script>
     (function(){
-        // ----- TIERS (based on total souls collected, not current spend) -----
+        // ----------------------------- TIERS (expanded with fictional and beyond) -----------------------------
         const TIERS = [
-            { name: "ACOLYTE",        minSouls: 0,     maxSouls: 100,    color: "#6b4e3a", visual: "book",      clickBonus: 0,   essenceMult: 1.0 },
-            { name: "SOUL WEAVER",    minSouls: 100,   maxSouls: 500,    color: "#8b5e4a", visual: "book",      clickBonus: 2,   essenceMult: 1.3 },
-            { name: "BONE CALLER",    minSouls: 500,   maxSouls: 2000,   color: "#aa6e4a", visual: "skull",     clickBonus: 5,   essenceMult: 1.6 },
-            { name: "NECROMANCER",    minSouls: 2000,  maxSouls: 8000,   color: "#cc7e5a", visual: "skull",     clickBonus: 10,  essenceMult: 2.0 },
-            { name: "LICH LORD",      minSouls: 8000,  maxSouls: 25000,  color: "#ee8e6a", visual: "crown",     clickBonus: 18,  essenceMult: 2.5 },
-            { name: "DEITY OF DEATH", minSouls: 25000, maxSouls: Infinity, color: "#ffae8a", visual: "crown",     clickBonus: 30,  essenceMult: 3.2 }
+            { name: "ACOLYTE",           minSouls: 0,     maxSouls: 100,    visual: "book",      clickBonus: 0,   essenceMult: 1.0, color: "#6b4e3a" },
+            { name: "SOUL WEAVER",       minSouls: 100,   maxSouls: 500,    visual: "book",      clickBonus: 2,   essenceMult: 1.3, color: "#8b5e4a" },
+            { name: "BONE CALLER",       minSouls: 500,   maxSouls: 2000,   visual: "skull",     clickBonus: 5,   essenceMult: 1.6, color: "#aa6e4a" },
+            { name: "NECROMANCER",       minSouls: 2000,  maxSouls: 8000,   visual: "skull",     clickBonus: 10,  essenceMult: 2.0, color: "#cc7e5a" },
+            { name: "LICH LORD",         minSouls: 8000,  maxSouls: 25000,  visual: "crown",     clickBonus: 18,  essenceMult: 2.5, color: "#ee8e6a" },
+            { name: "DEATH INCARNATE",   minSouls: 25000, maxSouls: 75000,  visual: "crown",     clickBonus: 30,  essenceMult: 3.2, color: "#ff9e7a" },
+            { name: "SOUL EATER",        minSouls: 75000, maxSouls: 200000, visual: "skull",     clickBonus: 50,  essenceMult: 4.0, color: "#ffae8a" },
+            { name: "NECROTIC ASCENSION",minSouls: 200000,maxSouls: 500000, visual: "crown",     clickBonus: 80,  essenceMult: 5.0, color: "#ffbeaa" },
+            { name: "LORD OF THE DEAD",  minSouls: 500000,maxSouls: 1000000,visual: "crown",     clickBonus: 120, essenceMult: 6.2, color: "#ffceca" },
+            { name: "DEITY OF DEATH",    minSouls: 1000000,maxSouls: Infinity, visual: "crown",   clickBonus: 200, essenceMult: 8.0, color: "#ffdeea" }
         ];
 
-        // ----- UPGRADES -----
+        // ----------------------------- UPGRADES (expanded) -----------------------------
         const UPGRADES = [
             { id: "soul_siphon", name: "💀 SOUL SIPHON", desc: "+3 souls per click", basePrice: 25, effectType: "clickBonus", effectValue: 3, priceMultiplier: 1.5, level: 0 },
             { id: "essence_catalyst", name: "✨ ESSENCE CATALYST", desc: "+25% essence per click", basePrice: 40, effectType: "essenceMult", effectValue: 0.25, priceMultiplier: 1.6, level: 0 },
             { id: "spectral_army", name: "👻 SPECTRAL ARMY", desc: "+1 soul/sec passive", basePrice: 60, effectType: "passiveSouls", effectValue: 1, priceMultiplier: 1.7, level: 0 },
-            { id: "dark_ritual", name: "🌑 DARK RITUAL", desc: "+10% total souls gain", basePrice: 100, effectType: "soulsMultiplier", effectValue: 0.1, priceMultiplier: 1.8, level: 0 }
+            { id: "dark_ritual", name: "🌑 DARK RITUAL", desc: "+10% total souls gain", basePrice: 100, effectType: "soulsMult", effectValue: 0.1, priceMultiplier: 1.8, level: 0 },
+            { id: "soul_reaper", name: "⚔️ SOUL REAPER", desc: "+5 souls per click", basePrice: 150, effectType: "clickBonus", effectValue: 5, priceMultiplier: 1.9, level: 0 },
+            { id: "death_scythe", name: "🌙 DEATH'S SCYTHE", desc: "+30% essence per click", basePrice: 200, effectType: "essenceMult", effectValue: 0.3, priceMultiplier: 2.0, level: 0 },
+            { id: "phylactery", name: "📿 PHYLACTERY", desc: "+2 souls/sec passive", basePrice: 250, effectType: "passiveSouls", effectValue: 2, priceMultiplier: 2.1, level: 0 },
+            { id: "soul_eater", name: "🍖 SOUL EATER", desc: "+20% total souls gain", basePrice: 350, effectType: "soulsMult", effectValue: 0.2, priceMultiplier: 2.2, level: 0 },
+            { id: "lich_king", name: "👑 LICH KING", desc: "+8 souls per click", basePrice: 500, effectType: "clickBonus", effectValue: 8, priceMultiplier: 2.3, level: 0 },
+            { id: "eternal_night", name: "🌌 ETERNAL NIGHT", desc: "+50% essence per click", basePrice: 700, effectType: "essenceMult", effectValue: 0.5, priceMultiplier: 2.4, level: 0 }
         ];
 
         // Game state
         let totalSoulsEarned = 0;   // lifetime souls (for tier progression)
-        let currentSouls = 0;       // spendable souls
+        let currentSouls = 0;       // spendable souls (not used currently, but kept for consistency)
         let darkEssence = 0;
         let totalClicks = 0;
         let currentTier = TIERS[0];
         let upgrades = JSON.parse(JSON.stringify(UPGRADES));
         let earnedAchievements = new Set();
-        
+
         // Passive interval
         let passiveInterval;
 
@@ -364,7 +440,6 @@
         let clickFlash = 0;
         let w = canvas.width, h = canvas.height;
         let centerX = w/2, centerY = h/2;
-        let bookAngle = 0;
 
         // DOM elements
         const soulsDisplay = document.getElementById('soulsDisplay');
@@ -390,7 +465,7 @@
             const newTier = getTierFromSouls(totalSoulsEarned);
             if(newTier !== currentTier) {
                 currentTier = newTier;
-                spawnBurstParticles(40);
+                spawnBurstParticles(50);
                 showToast(`⚰️ TIER UP! You are now a ${currentTier.name} ⚰️`);
             }
             tierNameSpan.innerText = currentTier.name;
@@ -415,19 +490,27 @@
         // Compute click gain
         function getClickSouls() {
             let base = 5 + currentTier.clickBonus;
-            const siphon = upgrades.find(u => u.id === "soul_siphon");
-            if(siphon) base += siphon.level * siphon.effectValue;
-            const multUp = upgrades.find(u => u.id === "dark_ritual");
+            // Sum all clickBonus type upgrades
+            const clickUpgrades = upgrades.filter(u => u.effectType === "clickBonus");
+            for(let up of clickUpgrades) {
+                base += up.level * up.effectValue;
+            }
+            // souls multiplier
             let multiplier = 1;
-            if(multUp) multiplier += multUp.level * multUp.effectValue;
+            const soulMultUpgrades = upgrades.filter(u => u.effectType === "soulsMult");
+            for(let up of soulMultUpgrades) {
+                multiplier += up.level * up.effectValue;
+            }
             return Math.floor(base * multiplier);
         }
 
         function getClickEssence() {
             let base = 1 + Math.floor(totalSoulsEarned / 200);
-            const catalyst = upgrades.find(u => u.id === "essence_catalyst");
             let multiplier = currentTier.essenceMult;
-            if(catalyst) multiplier += catalyst.level * catalyst.effectValue;
+            const essenceUpgrades = upgrades.filter(u => u.effectType === "essenceMult");
+            for(let up of essenceUpgrades) {
+                multiplier += up.level * up.effectValue;
+            }
             return Math.floor(base * multiplier);
         }
 
@@ -452,7 +535,7 @@
         }
 
         function updateUI() {
-            soulsDisplay.innerText = Math.floor(currentSouls);
+            soulsDisplay.innerText = Math.floor(totalSoulsEarned);
             essenceDisplay.innerText = Math.floor(darkEssence);
             updateClickInfo();
             renderUpgrades();
@@ -504,58 +587,68 @@
             }
         }
 
-        // Passive soul income from "spectral army"
+        // Passive soul income from spectral army and phylactery
         function startPassiveIncome() {
             if(passiveInterval) clearInterval(passiveInterval);
             passiveInterval = setInterval(() => {
-                const passiveUp = upgrades.find(u => u.id === "spectral_army");
                 let passiveGain = 0;
-                if(passiveUp) passiveGain += passiveUp.level * passiveUp.effectValue;
+                const passiveUpgrades = upgrades.filter(u => u.effectType === "passiveSouls");
+                for(let up of passiveUpgrades) {
+                    passiveGain += up.level * up.effectValue;
+                }
                 if(passiveGain > 0) {
                     addSoulsAndEssence(passiveGain, 0);
                 }
                 // also a tiny drift (atmosphere)
-                if(totalSoulsEarned < 50000) {
+                if(totalSoulsEarned < 2000000) {
                     addSoulsAndEssence(0.1, 0);
                 }
             }, 1000);
         }
 
-        // ----- ACHIEVEMENTS -----
+        // ----- ACHIEVEMENTS (expanded) -----
         const ACHIEVEMENTS = [
             { id: "first_ritual", name: "FIRST RITUAL", desc: "First click", check: (s) => s.totalClicks >= 1 },
             { id: "soul_collector", name: "SOUL COLLECTOR", desc: "100 total souls", check: (s) => s.totalSoulsEarned >= 100 },
             { id: "bone_caller", name: "BONE CALLER", desc: "Reach Bone Caller tier", check: (s) => s.currentTierName === "BONE CALLER" },
             { id: "necromancer", name: "NECROMANCER", desc: "Reach Necromancer tier", check: (s) => s.currentTierName === "NECROMANCER" },
             { id: "lich_lord", name: "LICH LORD", desc: "Reach Lich Lord tier", check: (s) => s.currentTierName === "LICH LORD" },
+            { id: "death_incarnate", name: "DEATH INCARNATE", desc: "Reach Death Incarnate", check: (s) => s.currentTierName === "DEATH INCARNATE" },
+            { id: "soul_eater_tier", name: "SOUL EATER", desc: "Reach Soul Eater tier", check: (s) => s.currentTierName === "SOUL EATER" },
+            { id: "necrotic_ascension", name: "NECROTIC ASCENSION", desc: "Ascend to Necrotic Ascension", check: (s) => s.currentTierName === "NECROTIC ASCENSION" },
+            { id: "lord_of_dead", name: "LORD OF THE DEAD", desc: "Reach Lord of the Dead", check: (s) => s.currentTierName === "LORD OF THE DEAD" },
             { id: "deity_of_death", name: "DEITY OF DEATH", desc: "Reach final tier", check: (s) => s.currentTierName === "DEITY OF DEATH" },
             { id: "click_fiend", name: "RELENTLESS", desc: "1000 clicks", check: (s) => s.totalClicks >= 1000 },
             { id: "essence_master", name: "ESSENCE MASTER", desc: "5000 dark essence", check: (s) => s.darkEssence >= 5000 },
-            { id: "soul_hoarder", name: "SOUL HOARDER", desc: "10,000 souls held", check: (s) => s.currentSouls >= 10000 },
-            { id: "full_upgrade", name: "ARCANE MASTERY", desc: "Any upgrade at level 5", check: (s) => s.maxUpgradeLevel >= 5 },
+            { id: "essence_hoarder", name: "ESSENCE HOARDER", desc: "100,000 dark essence", check: (s) => s.darkEssence >= 100000 },
+            { id: "soul_hoarder", name: "SOUL HOARDER", desc: "10,000 souls held", check: (s) => s.totalSoulsEarned >= 10000 },
+            { id: "full_upgrade", name: "ARCANE MASTERY", desc: "Any upgrade at level 10", check: (s) => s.maxUpgradeLevel >= 10 },
+            { id: "all_upgrades", name: "NECROMANTIC PERFECTION", desc: "All upgrades at level 5+", check: (s) => s.allUpgradesLevel5 },
             { id: "million_souls", name: "SOUL MILLIONAIRE", desc: "1,000,000 total souls", check: (s) => s.totalSoulsEarned >= 1000000 },
-            { id: "spectral_army", name: "SPECTRAL LEGION", desc: "Passive upgrade level 5", check: (s) => s.spectralArmyLevel >= 5 }
+            { id: "spectral_legion", name: "SPECTRAL LEGION", desc: "Passive upgrade total level 10+", check: (s) => s.passiveUpgradeTotal >= 10 }
         ];
 
         let stateForAchievements = {
             totalSoulsEarned: 0,
-            currentSouls: 0,
             darkEssence: 0,
             totalClicks: 0,
             currentTierName: "",
             maxUpgradeLevel: 0,
-            spectralArmyLevel: 0
+            allUpgradesLevel5: false,
+            passiveUpgradeTotal: 0
         };
 
         function checkAchievements() {
+            const passiveUpgrades = upgrades.filter(u => u.effectType === "passiveSouls");
+            const passiveTotal = passiveUpgrades.reduce((sum, u) => sum + u.level, 0);
             stateForAchievements = {
                 totalSoulsEarned: totalSoulsEarned,
-                currentSouls: currentSouls,
                 darkEssence: darkEssence,
                 totalClicks: totalClicks,
                 currentTierName: currentTier.name,
                 maxUpgradeLevel: Math.max(...upgrades.map(u => u.level), 0),
-                spectralArmyLevel: upgrades.find(u => u.id === "spectral_army")?.level || 0
+                allUpgradesLevel5: upgrades.every(u => u.level >= 5),
+                passiveUpgradeTotal: passiveTotal
             };
             let anyNew = false;
             ACHIEVEMENTS.forEach(ach => {
@@ -606,12 +699,12 @@
             renderUpgrades();
             checkAchievements();
             updateAchievementUI();
-            spawnBurstParticles(30);
+            spawnBurstParticles(40);
         }
 
         // ----- PARTICLE SYSTEM -----
         function spawnClickParticles(amount) {
-            for(let i=0; i<Math.min(20, 5+Math.floor(amount/5)); i++) {
+            for(let i=0; i<Math.min(25, 5+Math.floor(amount/5)); i++) {
                 const angle = Math.random() * Math.PI * 2;
                 const speed = 1 + Math.random() * 4;
                 particles.push({
@@ -631,13 +724,13 @@
                 const angle = Math.random() * Math.PI * 2;
                 const speed = 0.8 + Math.random() * 3;
                 particles.push({
-                    x: centerX + (Math.random()-0.5)*30,
-                    y: centerY + (Math.random()-0.5)*30,
+                    x: centerX + (Math.random()-0.5)*40,
+                    y: centerY + (Math.random()-0.5)*40,
                     vx: Math.cos(angle) * speed,
                     vy: Math.sin(angle) * speed,
                     life: 1.0,
-                    size: 2 + Math.random() * 5,
-                    color: `hsl(${20 + Math.random() * 50}, 85%, 65%)`,
+                    size: 2 + Math.random() * 6,
+                    color: `hsl(${20 + Math.random() * 60}, 85%, 65%)`,
                     outward: true
                 });
             }
@@ -656,14 +749,13 @@
             }
         }
 
-        // ----- CANVAS DRAWING (Grimoire theme) -----
+        // ----- CANVAS DRAWING (Enhanced with tier-based visuals) -----
         function drawGrimoire() {
             const radX = 140;
             const radY = 100;
             ctx.save();
             ctx.shadowBlur = 15;
             ctx.shadowColor = "#aa5533";
-            // book cover
             ctx.fillStyle = "#3a2a1e";
             ctx.beginPath();
             ctx.ellipse(centerX, centerY, radX, radY, 0, 0, Math.PI*2);
@@ -672,12 +764,10 @@
             ctx.beginPath();
             ctx.ellipse(centerX-5, centerY-3, radX-8, radY-6, 0, 0, Math.PI*2);
             ctx.fill();
-            // pages
             ctx.fillStyle = "#edd8b0";
             ctx.beginPath();
             ctx.ellipse(centerX, centerY, radX-12, radY-12, 0, 0, Math.PI*2);
             ctx.fill();
-            // skull emblem
             ctx.fillStyle = "#4a2a1a";
             ctx.beginPath();
             ctx.arc(centerX, centerY-5, 22, 0, Math.PI*2);
@@ -691,7 +781,6 @@
             ctx.ellipse(centerX, centerY+2, 10, 8, 0, 0, Math.PI*2);
             ctx.fillStyle = "#4a2a1a";
             ctx.fill();
-            // runes
             ctx.font = "24px 'Courier New'";
             ctx.fillStyle = "#ffaa66";
             ctx.shadowBlur = 8;
@@ -768,7 +857,6 @@
                 ctx.fill();
                 clickFlash -= 0.045;
             }
-            // glow
             ctx.shadowBlur = 0;
         }
 
@@ -785,6 +873,65 @@
             centerY = h/2;
         }
 
+        // Admin Console
+        const adminModal = document.getElementById('adminModal');
+        const adminPassword = document.getElementById('adminPassword');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminControls = document.getElementById('adminControls');
+        const closeAdminBtn = document.getElementById('closeAdminBtn');
+        const adminAddEssence = document.getElementById('adminAddEssence');
+        const adminAddSouls = document.getElementById('adminAddSouls');
+        const adminReset = document.getElementById('adminReset');
+        const adminUnlockAll = document.getElementById('adminUnlockAll');
+
+        function showAdminModal() {
+            adminModal.style.display = 'flex';
+            adminPassword.value = '';
+            adminControls.style.display = 'none';
+        }
+
+        function closeAdminModal() {
+            adminModal.style.display = 'none';
+        }
+
+        adminLoginBtn.onclick = () => {
+            if(adminPassword.value === "matter") {
+                adminControls.style.display = 'block';
+                showToast("🔓 Admin access granted", false);
+            } else {
+                showToast("❌ Invalid password", true);
+            }
+        };
+
+        adminAddEssence.onclick = () => {
+            addSoulsAndEssence(0, 10000);
+            showToast("🔥 +10,000 Dark Essence added", false);
+        };
+        adminAddSouls.onclick = () => {
+            addSoulsAndEssence(10000, 0);
+            showToast("💀 +10,000 Souls added", false);
+        };
+        adminReset.onclick = () => {
+            if(confirm("Hard reset will erase all progress. Continue?")) {
+                resetGame();
+                showToast("💀 Game has been hard reset", false);
+            }
+        };
+        adminUnlockAll.onclick = () => {
+            ACHIEVEMENTS.forEach(ach => earnedAchievements.add(ach.id));
+            updateAchievementUI();
+            showToast("🏆 All achievements unlocked!", false);
+        };
+        closeAdminBtn.onclick = closeAdminModal;
+        window.onkeydown = (e) => {
+            if(e.key === 'k' || e.key === 'K') {
+                e.preventDefault();
+                showAdminModal();
+            }
+        };
+        window.onclick = (e) => { if(e.target === adminModal) closeAdminModal(); };
+
+        // Initialization
         canvas.addEventListener('click', onCanvasClick);
         document.getElementById('resetBtn').addEventListener('click', resetGame);
         window.addEventListener('resize', resizeCanvas);
@@ -793,6 +940,7 @@
         startPassiveIncome();
         animate();
         renderUpgrades();
+        updateAchievementUI();
     })();
 </script>
 </body>
